@@ -84,6 +84,7 @@ Creation des tables
         id
         id_document
         id_demande
+Insertion de donnees
 
 Feature-2 : CREATE MODEL (ETU003309)
 Creation des models avec getters et setters
@@ -152,7 +153,7 @@ Creation des models avec getters et setters
         libelle (String)
         type (String)
 
-Feature-4 : UPDATE SETTERS (ETU003309)
+Feature-3 : UPDATE SETTERS (ETU003309)
 Ajouter la condition : "si l'argument != null sinon exception l'argument 
         est obligatoire" aux setters de chaque classe suivante : 
     Demandeur : 
@@ -174,8 +175,7 @@ Ajouter la condition : "si l'argument != null sinon exception l'argument
         void setDateEntree(LocalDate dateEntree)
         void setLieuEntree(String lieuEntree)
 
-Feature-3 : CREATE FUNCTION (ETU003301 / ETU003309)
-CREATE FUNCTION SAVE (ETU003301)
+Feature-4 : CREATE FUNCTION SAVE (ETU003301)
 DemandeurService :
     - Demandeur save(Demandeur demandeur) {
         envoi d'exception si demandeur null
@@ -222,7 +222,7 @@ HistoriqueDemandeService :
         retourner historiqueDemande
     }
 
-CREATE FUNCTION LIST (ETU003309) 
+Feature-5 : CREATE FUNCTION LIST (ETU003309) 
 CategorieDemandeService :
     - List<CategorieDemande> getAll() {
         appel de la fonction findAll de CategorieDemandeRepository
@@ -246,7 +246,7 @@ DocumentService
         retourner la liste
     }
 
-Feature-4 : CREATE CONTROLLER (ETU003309)
+Feature-6 : CREATE CONTROLLER (ETU003309)
 DemandeController :
       @GetMapping("/form")
     - String showForm() {
@@ -265,7 +265,7 @@ DemandeController :
         retourner la page demande/form
     }
 
-Feature-5 : INTEGRATION PAGE (ETU003301)
+Feature-7 : INTEGRATION PAGE (ETU003301)
 Creation de 5 pages jsp dans le dossier demande a cree: 
     - etat-civil.jsp
     - passeport.jsp
