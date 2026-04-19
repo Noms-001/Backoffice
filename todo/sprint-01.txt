@@ -1,0 +1,274 @@
+TL : ETU003340
+DEV : ETU003301 / ETU003309
+
+Feature-1 : CREATE TABLE (ETU003301)
+Creation des tables 
+    situation_familiale : 
+        id
+        libelle (Celibataire, Marie, Divorce, Veuf)
+    nationalite : 
+        id
+        libelle
+    demandeur : 
+        id
+        nom
+        prenom (facultatif)
+        nom_jeune_fille (obligatoire)
+        date_naissance (obligatoire)
+        lieu_naissance (obligatoire)
+        id_situation_familiale (obligatoire)
+        id_nationalite (obligatoire)
+        adresse_mada (obligatoire)
+        email (facultatif)
+        numero (obligatoire)
+    type_demande : 
+        id
+        libelle
+    categorie_demande :
+        id
+        libelle (travailleur / investisseur)
+    passeport :
+        id
+        reference
+        date_delivrance
+        lieu_delivrance
+        date_expiration
+        id_demandeur
+    statut_demande : 
+        id
+        libelle 
+    demande :
+        id
+        date_demande
+        id_categorie_demande
+        id_type_demande
+        id_demandeur
+    historique_demande : 
+        id
+        id_demande
+        id_statut_demande
+        date_changement
+        commentaire 
+    visa_transformable : 
+        id
+        date_entree
+        lieu_entree
+        date_sortie
+        lieu_sortie
+        numero_visa
+        id_demande
+        id_passeport
+    carte_resident :   
+        id_
+        reference
+        id_passeport
+        date_debut
+        date_fin
+        id_demande
+    visa : 
+        id
+        reference
+        id_passeport
+        date_debut
+        date_fin
+        id_demande
+    document :
+        id
+        libelle
+        type (COMMUN, SPECIFIQUE)
+    categorie_document : 
+        id
+        id_categorie_demande
+        id_document
+    document_demande :
+        id
+        id_document
+        id_demande
+
+Feature-2 : CREATE MODEL (ETU003309)
+Creation des models avec getters et setters
+    SituationFamiliale : 
+        id (Long)
+        libelle (String)
+    Nationalite : 
+        id (Long)
+        libelle (String)
+    Demandeur : 
+        id (Long)
+        nom (String)
+        prenom (String)
+        nomJeuneFille (String)
+        dateNaissance (LocalDate)
+        lieuNaissance (String)
+        situationFamiliale (SituationFamiliale)
+        nationalite (Nationalite)
+        adresseMada (String)
+        email (String)
+        numero (String)
+        passeports (List<Passeport>)
+        demandes (List<Demande>)
+    TypeDemande :
+        id (Long)
+        libelle (String)
+    CategorieDemande :
+        id (Long)
+        libelle (String)
+        documents (List<Document>)
+    Passeport :
+        id (Long)
+        reference (String)
+        dateDelivrance (LocalDate)
+        lieuDelivrance (String)
+        dateExpiration (LocalDate)
+        demandeur (Demandeur)
+        visaTransformables (List<VisaTransformable>)
+    StatutDemande
+        id (Long)
+        libelle (String)
+    Demande
+        id (Long)
+        categorieDemande (CategorieDemande)
+        typeDemande (TypeDemande)
+        demandeur (Demandeur)
+        dateDemande (LocalDate)
+        documents (List<Document>)
+    HistoriqueDemande
+        id (Long)
+        demande (Demande)
+        statutDemande (StatutDemande)
+        dateChangement (LocalDate)
+        commentaire (String)
+    VisaTransformable 
+        id (Long)
+        numeroVisa (String)
+        dateEntree (LocalDate)
+        lieuEntree (String)
+        dateSortie (LocalDate)
+        lieuSortie (String)
+        demande (Demande)
+        passeport (Passeport)
+    Document
+        id (Long)
+        libelle (String)
+        type (String)
+
+Feature-4 : UPDATE SETTERS (ETU003309)
+Ajouter la condition : "si l'argument != null sinon exception l'argument 
+        est obligatoire" aux setters de chaque classe suivante : 
+    Demandeur : 
+        void setNom(String nom)
+        void setDateNaissance(LocalDate dateNaissance)
+        void setLieuNaissance(String lieuNaissance)
+        void setSituationFamiale(SituationFamiliale situationFamiliale)
+        void setNationalite(Nationalite nationalite)
+        void setAdresseMada(String adresseMada)
+        void setNumero(String numero)
+    Passeport :
+        void setReference(String reference)
+        void setDateDelivrance(LocalDate dateDelivrance)
+        void setLieuDelivrance(String lieuDelivrance)
+        void setDateExpiration(LocalDate dateExpiration)
+        void setDemandeur(Demandeur demandeur)
+    VisaTransformable : 
+        void setNumeroVisa(String numeroVisa)
+        void setDateEntree(LocalDate dateEntree)
+        void setLieuEntree(String lieuEntree)
+
+Feature-3 : CREATE FUNCTION (ETU003301 / ETU003309)
+CREATE FUNCTION SAVE (ETU003301)
+DemandeurService :
+    - Demandeur save(Demandeur demandeur) {
+        envoi d'exception si demandeur null
+        appel de la fonction save de DemandeurRepository
+        retourner demandeur
+    }
+PasseportService : 
+    - Passeport save(Passeport passeport) {
+        envoi d'exception si passeport null
+        appel de la fonction save de PasseportRepository
+        retourner passeport
+    }
+VisaTransformableService : 
+    - VisaTransformable save(VisaTransformable visaTransformable) {
+        envoi d'exception si visaTransformable null
+        appel de la fonction save de VisaTransformableRepository
+        retourner visaTransformable
+    }
+DemandeService : 
+    - Demande save(Demande demande) {
+        envoi d'exception si demande null
+        appel de la fonction save de DemandeRepository
+        retourner demande
+    }
+    - String saveNouveuTitre(Demandeur demandeur, Passeport passeport, VisaTransformable visaTransformable, List<Document> documents, Long idCategorieDemande) {
+        appel de la fonction save de DemandeurService
+        si la fonction retourne null -> exception = "Echec de l'enregistrement du demandeur"
+        appel de la fonction save de PasseportService
+        si la fonction retourne null -> exception = "Echec de l'enregistrement du passeport"
+        declarer la variable Demande demande
+        utilisation de setters de demande
+        appel de la fonction save de DemandeService
+        si la fonction retourne null -> exception = "Echec de l'enregistrement de la demande"
+        appel de la fonction save de VisaTransformableService
+        si la fonction retourne null -> exception = "Echec de l'enregistrement du visa transformable"
+        appel de la fonction save de HistoriqueDemandeService
+        si la fonction retourne null -> exception = "Echec de l'enregistrement de la statut de demande"
+        retourner un message de reussite 
+    }
+HistoriqueDemandeService :
+    - HistoriqueDemande save(HistoriqueDemande historiqueDemande) {
+        envoi d'exception si historiqueDemande null
+        appel de la fonction save de historiqueDemande
+        retourner historiqueDemande
+    }
+
+CREATE FUNCTION LIST (ETU003309) 
+CategorieDemandeService :
+    - List<CategorieDemande> getAll() {
+        appel de la fonction findAll de CategorieDemandeRepository
+        retourner la liste
+    }
+SituationFamilialeService
+    - List<SituationFamiliale> getAll() {
+        appel de la fonction findAll de SituationFamilialeRepository
+        retourner la liste
+    }
+NationaliteService
+    - List<Nationalite> getAll() {
+        appel de la fonction findAll de NationaliteRepository
+        retourner la liste
+    }
+DocumentRepository
+    - List<Document> findByType(String type)
+DocumentService 
+    - List<Document> getAllCommuns() {
+        appel de la fonction findByType (type="COMMUN") de DocumentRepository
+        retourner la liste
+    }
+
+Feature-4 : CREATE CONTROLLER (ETU003309)
+DemandeController :
+      @GetMapping("/form")
+    - String showForm() {
+        appel des fonctions : 
+            + List<CategorieDemande> getAll() dans CategorieDemandeService
+            + List<Nationalite> getAll() dans NationaliteService
+            + List<SituationFamiliale> getAll() dans SituationFamilialeService
+            + List<Document> getAllCommuns() dans DocumentService
+        utilisation de setAttribute
+        retourner la page demande/form
+    }
+      @PostMapping("/insert")
+    - String insertDemande(Informations du formulaire de saisie) {
+        appel de la fonction saveNouveuTitre de DemandeService
+        utilisation de setAttribute
+        retourner la page demande/form
+    }
+
+Feature-5 : INTEGRATION PAGE (ETU003301)
+Creation de 5 pages jsp dans le dossier demande a cree: 
+    - etat-civil.jsp
+    - passeport.jsp
+    - visa-transformable.jsp
+    - document.jsp
+    - form.jsp
