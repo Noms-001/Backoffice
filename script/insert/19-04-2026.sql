@@ -149,3 +149,5 @@ SELECT id, 12 FROM categorie_demande WHERE libelle = 'Travailleur';
 
 INSERT INTO categorie_document (id_categorie_demande, id_document)
 SELECT id, 13 FROM categorie_demande WHERE libelle = 'Travailleur';
+
+INSERT INTO statut_demande (libelle) VALUES ('CREER');
