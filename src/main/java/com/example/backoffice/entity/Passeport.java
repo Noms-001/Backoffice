@@ -42,6 +42,9 @@ public class Passeport {
     }
 
     public void setReference(String reference) {
+        if (reference == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.reference = reference;
     }
 
@@ -50,6 +53,9 @@ public class Passeport {
     }
 
     public void setDateDelivrance(LocalDate dateDelivrance) {
+        if (dateDelivrance == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.dateDelivrance = dateDelivrance;
     }
 
@@ -58,6 +64,9 @@ public class Passeport {
     }
 
     public void setLieuDelivrance(String lieuDelivrance) {
+        if (lieuDelivrance == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.lieuDelivrance = lieuDelivrance;
     }
 
@@ -66,6 +75,9 @@ public class Passeport {
     }
 
     public void setDateExpiration(LocalDate dateExpiration) {
+        if (dateExpiration == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.dateExpiration = dateExpiration;
     }
 
@@ -74,6 +86,9 @@ public class Passeport {
     }
 
     public void setDemandeur(Demandeur demandeur) {
+        if (demandeur == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.demandeur = demandeur;
     }
 

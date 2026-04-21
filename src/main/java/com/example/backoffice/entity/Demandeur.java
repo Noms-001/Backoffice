@@ -53,6 +53,9 @@ public class Demandeur {
     }
 
     public void setNom(String nom) {
+        if (nom == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.nom = nom;
     }
 
@@ -77,6 +80,9 @@ public class Demandeur {
     }
 
     public void setDateNaissance(LocalDate dateNaissance) {
+        if (dateNaissance == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.dateNaissance = dateNaissance;
     }
 
@@ -85,6 +91,9 @@ public class Demandeur {
     }
 
     public void setLieuNaissance(String lieuNaissance) {
+        if (lieuNaissance == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.lieuNaissance = lieuNaissance;
     }
 
@@ -93,6 +102,9 @@ public class Demandeur {
     }
 
     public void setSituationFamiliale(SituationFamiliale situationFamiliale) {
+        if (situationFamiliale == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.situationFamiliale = situationFamiliale;
     }
 
@@ -101,6 +113,9 @@ public class Demandeur {
     }
 
     public void setNationalite(Nationalite nationalite) {
+        if (nationalite == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.nationalite = nationalite;
     }
 
@@ -109,6 +124,9 @@ public class Demandeur {
     }
 
     public void setAdresseMada(String adresseMada) {
+        if (adresseMada == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.adresseMada = adresseMada;
     }
 
@@ -125,6 +143,9 @@ public class Demandeur {
     }
 
     public void setNumero(String numero) {
+        if (numero == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.numero = numero;
     }
 
