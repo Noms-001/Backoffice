@@ -1,10 +1,13 @@
 package com.example.backoffice.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
@@ -14,12 +17,17 @@ public class HistoriqueDemande {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "id_demande", nullable = false)
     private Demande demande;
 
     @ManyToOne
+    @JoinColumn(name = "id_statut_demande", nullable = false)
     private StatutDemande statutDemande;
 
-    private LocalDate dateChangement;
+    @Column(name = "date_changement")
+    private LocalDateTime dateChangement;
+
+    @Column(name = "commentaire")
     private String commentaire;
 
     public HistoriqueDemande() {
@@ -49,11 +57,11 @@ public class HistoriqueDemande {
         this.statutDemande = statutDemande;
     }
 
-    public LocalDate getDateChangement() {
+    public LocalDateTime getDateChangement() {
         return dateChangement;
     }
 
-    public void setDateChangement(LocalDate dateChangement) {
+    public void setDateChangement(LocalDateTime dateChangement) {
         this.dateChangement = dateChangement;
     }
 

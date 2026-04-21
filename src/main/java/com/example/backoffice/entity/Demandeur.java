@@ -2,10 +2,13 @@ package com.example.backoffice.entity;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
@@ -15,20 +18,34 @@ public class Demandeur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String nom;
+
     private String prenom;
+
+    @Column(name = "nom_jeune_fille")
     private String nomJeuneFille;
+
+    @Column(name = "date_naissance", nullable = false)
     private LocalDate dateNaissance;
+
+    @Column(name = "lieu_naissance", nullable = false)
     private String lieuNaissance;
 
     @ManyToOne
+    @JoinColumn(name = "id_situation_familiale", nullable = false)
     private SituationFamiliale situationFamiliale;
 
     @ManyToOne
+    @JoinColumn(name = "id_nationalite", nullable = false)
     private Nationalite nationalite;
 
+    @Column(name = "adresse_mada", nullable = false)
     private String adresseMada;
+
     private String email;
+
+    @Column(nullable = false)
     private String numero;
 
     @OneToMany(mappedBy = "demandeur")
@@ -54,7 +71,7 @@ public class Demandeur {
 
     public void setNom(String nom) {
         if (nom == null) {
-            throw new IllegalArgumentException("l'argument est obligatoire");
+            throw new IllegalArgumentException("Nom obligatoire");
         }
         this.nom = nom;
     }
@@ -81,7 +98,7 @@ public class Demandeur {
 
     public void setDateNaissance(LocalDate dateNaissance) {
         if (dateNaissance == null) {
-            throw new IllegalArgumentException("l'argument est obligatoire");
+            throw new IllegalArgumentException("Date de naissance obligatoire");
         }
         this.dateNaissance = dateNaissance;
     }
@@ -92,7 +109,7 @@ public class Demandeur {
 
     public void setLieuNaissance(String lieuNaissance) {
         if (lieuNaissance == null) {
-            throw new IllegalArgumentException("l'argument est obligatoire");
+            throw new IllegalArgumentException("Lieu de naissance obligatoire");
         }
         this.lieuNaissance = lieuNaissance;
     }
@@ -103,7 +120,7 @@ public class Demandeur {
 
     public void setSituationFamiliale(SituationFamiliale situationFamiliale) {
         if (situationFamiliale == null) {
-            throw new IllegalArgumentException("l'argument est obligatoire");
+            throw new IllegalArgumentException("Situation famialiale obligatoire");
         }
         this.situationFamiliale = situationFamiliale;
     }
@@ -114,7 +131,7 @@ public class Demandeur {
 
     public void setNationalite(Nationalite nationalite) {
         if (nationalite == null) {
-            throw new IllegalArgumentException("l'argument est obligatoire");
+            throw new IllegalArgumentException("Nationalité obligatoire");
         }
         this.nationalite = nationalite;
     }
@@ -125,7 +142,7 @@ public class Demandeur {
 
     public void setAdresseMada(String adresseMada) {
         if (adresseMada == null) {
-            throw new IllegalArgumentException("l'argument est obligatoire");
+            throw new IllegalArgumentException("Adresse obligatoire");
         }
         this.adresseMada = adresseMada;
     }
@@ -144,7 +161,7 @@ public class Demandeur {
 
     public void setNumero(String numero) {
         if (numero == null) {
-            throw new IllegalArgumentException("l'argument est obligatoire");
+            throw new IllegalArgumentException("Numero obligatoire");
         }
         this.numero = numero;
     }
