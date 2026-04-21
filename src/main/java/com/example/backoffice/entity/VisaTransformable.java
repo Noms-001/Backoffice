@@ -42,6 +42,9 @@ public class VisaTransformable {
     }
 
     public void setNumeroVisa(String numeroVisa) {
+        if (numeroVisa == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.numeroVisa = numeroVisa;
     }
 
@@ -50,6 +53,9 @@ public class VisaTransformable {
     }
 
     public void setDateEntree(LocalDate dateEntree) {
+        if (dateEntree == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.dateEntree = dateEntree;
     }
 
@@ -58,6 +64,9 @@ public class VisaTransformable {
     }
 
     public void setLieuEntree(String lieuEntree) {
+        if (lieuEntree == null) {
+            throw new IllegalArgumentException("l'argument est obligatoire");
+        }
         this.lieuEntree = lieuEntree;
     }
 
