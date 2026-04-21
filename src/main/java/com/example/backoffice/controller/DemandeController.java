@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import com.example.backoffice.entity.CategorieDemande;
-import com.example.backoffice.entity.Demande;
 import com.example.backoffice.entity.Demandeur;
 import com.example.backoffice.entity.Document;
 import com.example.backoffice.entity.Nationalite;
