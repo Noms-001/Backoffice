@@ -1,6 +1,6 @@
 package com.example.backoffice.service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class HistoriqueDemandeService {
         HistoriqueDemande historique = new HistoriqueDemande();
         historique.setDemande(demande);
         historique.setStatutDemande(statutDemande);
-        historique.setDateChangement(LocalDate.now());
+        historique.setDateChangement(LocalDateTime.now());
         historique.setCommentaire("Demande créée");
         return historique;
     }
