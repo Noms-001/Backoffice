@@ -72,6 +72,24 @@ CREATE TABLE passeport (
 );
 
 -- =========================
+-- VISA TRANSFORMABLE
+-- =========================
+
+CREATE TABLE visa_transformable (
+    id SERIAL PRIMARY KEY,
+    date_entree DATE,
+    lieu_entree VARCHAR(150),
+    date_sortie DATE,
+    lieu_sortie VARCHAR(150),
+    numero_visa VARCHAR(100) NOT NULL,
+    id_passeport INT NOT NULL,
+    
+    CONSTRAINT fk_vt_passeport
+        FOREIGN KEY (id_passeport)
+        REFERENCES passeport(id)
+);
+
+-- =========================
 -- DEMANDE
 -- =========================
 
@@ -81,7 +99,7 @@ CREATE TABLE demande (
     id_categorie_demande INT NOT NULL,
     id_type_demande INT NOT NULL,
     id_demandeur INT NOT NULL,
-
+    id_visa_transformable INT NOT NULL,
     CONSTRAINT fk_categorie
         FOREIGN KEY (id_categorie_demande)
         REFERENCES categorie_demande(id),
@@ -92,7 +110,11 @@ CREATE TABLE demande (
 
     CONSTRAINT fk_demandeur
         FOREIGN KEY (id_demandeur)
-        REFERENCES demandeur(id)
+        REFERENCES demandeur(id),
+
+    CONSTRAINT fk_visa_transformable
+        FOREIGN KEY (id_visa_transformable)
+        REFERENCES visa_transformable(id)
 );
 
 -- =========================
@@ -114,29 +136,6 @@ CREATE TABLE historique_demande (
     CONSTRAINT fk_hist_statut
         FOREIGN KEY (id_statut_demande)
         REFERENCES statut_demande(id)
-);
-
--- =========================
--- VISA TRANSFORMABLE
--- =========================
-
-CREATE TABLE visa_transformable (
-    id SERIAL PRIMARY KEY,
-    date_entree DATE,
-    lieu_entree VARCHAR(150),
-    date_sortie DATE,
-    lieu_sortie VARCHAR(150),
-    numero_visa VARCHAR(100) NOT NULL,
-    id_demande INT NOT NULL,
-    id_passeport INT NOT NULL,
-
-    CONSTRAINT fk_vt_demande
-        FOREIGN KEY (id_demande)
-        REFERENCES demande(id),
-
-    CONSTRAINT fk_vt_passeport
-        FOREIGN KEY (id_passeport)
-        REFERENCES passeport(id)
 );
 
 -- =========================
