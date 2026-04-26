@@ -16,4 +16,11 @@ public class DocumentService {
         return documentRepository.findByType("COMMUN");
     }
 
+    public List<Document> getAllByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return documentRepository.findAllById(ids);
+    }
+
 }
