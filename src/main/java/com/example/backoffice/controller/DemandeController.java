@@ -1,27 +1,34 @@
 package com.example.backoffice.controller;
 
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.example.backoffice.entity.CategorieDemande;
-import com.example.backoffice.entity.Demande;
 import com.example.backoffice.entity.Demandeur;
 import com.example.backoffice.entity.Document;
 import com.example.backoffice.entity.Nationalite;
 import com.example.backoffice.entity.Passeport;
 import com.example.backoffice.entity.SituationFamiliale;
+import com.example.backoffice.entity.StatutDemande;
 import com.example.backoffice.entity.VisaTransformable;
 import com.example.backoffice.service.CategorieDemandeService;
 import com.example.backoffice.service.DemandeService;
+import com.example.backoffice.service.DemandeurService;
 import com.example.backoffice.service.DocumentService;
 import com.example.backoffice.service.NationaliteService;
+import com.example.backoffice.service.PasseportService;
 import com.example.backoffice.service.SituationFamilialeService;
+import com.example.backoffice.service.StatutDemandeService;
 
 @Controller
 @RequestMapping("/demande")
@@ -42,110 +49,100 @@ public class DemandeController {
     @Autowired
     private DemandeService demandeService;
 
-    @GetMapping("/form")
-    public ModelAndView showForm() {
-        ModelAndView modelAndView = new ModelAndView("demande/form");
+    @Autowired
+    private DemandeurService demandeurService;
 
-        // Appel des fonctions des services
+    @Autowired
+    private PasseportService passeportService;
+
+    @Autowired
+    private StatutDemandeService statutDemandeService;
+
+    @GetMapping("/form")
+    public ModelAndView showForm(@RequestParam(name = "id", required = false) Long idDemande) {
+        ModelAndView modelAndView = new ModelAndView("demande/form");
+        if (idDemande != null) {
+            modelAndView.addObject("demande", demandeService.getById(idDemande));
+        }
         List<CategorieDemande> categories = categorieDemandeService.getAll();
         List<Nationalite> nationalites = nationaliteService.getAll();
         List<SituationFamiliale> situations = situationFamilialeService.getAll();
         List<Document> documents = documentService.getAllCommuns();
 
-        // Utilisation de setAttribute
         modelAndView.addObject("categories", categories);
         modelAndView.addObject("nationalites", nationalites);
         modelAndView.addObject("situations", situations);
         modelAndView.addObject("documents", documents);
 
+        // Initialiser des objets vides pour le formulaire
+        modelAndView.addObject("demandeur", new Demandeur());
+        modelAndView.addObject("passeport", new Passeport());
+        modelAndView.addObject("visaTransformable", new VisaTransformable());
+
         return modelAndView;
+    }
+
+    @GetMapping("/list")
+    public ModelAndView showList() {
+        ModelAndView model = new ModelAndView("demande/list");
+        List<CategorieDemande> categories = categorieDemandeService.getAll();
+        List<StatutDemande> statuts = statutDemandeService.getAll();
+        model.addObject("categories", categories);
+        model.addObject("statuts", statuts);
+        return model;
     }
 
     @PostMapping("/insert")
     public ModelAndView insertDemande(
-            @RequestParam String nom,
-            @RequestParam String prenom,
-            @RequestParam String nomJeuneFille,
-            @RequestParam String dateNaissanceStr,
-            @RequestParam String lieuNaissance,
-            @RequestParam Long situationFamilialeId,
-            @RequestParam Long nationaliteId,
-            @RequestParam String adresseMada,
-            @RequestParam String email,
-            @RequestParam String numero,
-            @RequestParam String referencePasseport,
-            @RequestParam String dateDelivranceStr,
-            @RequestParam String lieuDelivrance,
-            @RequestParam String dateExpirationStr,
-            @RequestParam String numeroVisa,
-            @RequestParam String dateEntreeStr,
-            @RequestParam String lieuEntree,
-            @RequestParam String dateSortieStr,
-            @RequestParam String lieuSortie,
-            @RequestParam Long idCategorieDemande) {
+            @ModelAttribute("demandeur") Demandeur demandeur,
+            @ModelAttribute("passeport") Passeport passeport,
+            @ModelAttribute("visaTransformable") VisaTransformable visaTransformable,
+            @RequestParam Long categorieDemandeId,
+            @RequestParam(name="demandeId", required=false) Long demandeId,
+            @RequestParam List<Long> documentIds,
+            RedirectAttributes redirectAttributes) {
 
-        ModelAndView modelAndView = new ModelAndView("demande/form");
+        ModelAndView modelAndView = new ModelAndView("redirect:/demande/form");
+
+        if(demandeId != null) {
+            modelAndView.setViewName("redirect:/demande/list");
+             redirectAttributes.addFlashAttribute("message", "Demande mise à jour avec succès");
+             return modelAndView;
+        }
 
         try {
-            // Création des objets à partir des paramètres du formulaire
-            Demandeur demandeur = new Demandeur();
-            demandeur.setNom(nom);
-            demandeur.setPrenom(prenom);
-            demandeur.setNomJeuneFille(nomJeuneFille);
-            demandeur.setDateNaissance(LocalDate.parse(dateNaissanceStr));
-            demandeur.setLieuNaissance(lieuNaissance);
-            demandeur.setAdresseMada(adresseMada);
-            demandeur.setEmail(email);
-            demandeur.setNumero(numero);
+            Demandeur savedDemandeur = demandeurService.save(demandeur);
 
-            // Récupération des références
-            SituationFamiliale situationFamiliale = new SituationFamiliale();
-            situationFamiliale.setId(situationFamilialeId);
-            demandeur.setSituationFamiliale(situationFamiliale);
+            passeport.setDemandeur(savedDemandeur);
+            Passeport savedPasseport = passeportService.save(passeport);
 
-            Nationalite nationalite = new Nationalite();
-            nationalite.setId(nationaliteId);
-            demandeur.setNationalite(nationalite);
+            List<Document> documents = documentService.getAllByIds(documentIds);
 
-            Passeport passeport = new Passeport();
-            passeport.setReference(referencePasseport);
-            passeport.setDateDelivrance(LocalDate.parse(dateDelivranceStr));
-            passeport.setLieuDelivrance(lieuDelivrance);
-            passeport.setDateExpiration(LocalDate.parse(dateExpirationStr));
+            String resultat = demandeService.saveNouveauTitre(savedDemandeur, savedPasseport, visaTransformable,
+                    documents, categorieDemandeId, demandeId);
 
-            VisaTransformable visaTransformable = new VisaTransformable();
-            visaTransformable.setNumeroVisa(numeroVisa);
-            visaTransformable.setDateEntree(LocalDate.parse(dateEntreeStr));
-            visaTransformable.setLieuEntree(lieuEntree);
-            visaTransformable.setDateSortie(LocalDate.parse(dateSortieStr));
-            visaTransformable.setLieuSortie(lieuSortie);
-
-            List<Document> documents = null;
-
-            // Appel de la fonction saveNouveauTitre de DemandeService
-            String resultat = demandeService.saveNouveauTitre(demandeur, passeport, visaTransformable, documents,
-                    idCategorieDemande);
-
-            // Utilisation de setAttribute pour passer le message de succès
-            modelAndView.addObject("message", resultat);
+            redirectAttributes.addFlashAttribute("message", resultat);
 
         } catch (Exception e) {
-            // Utilisation de setAttribute pour passer le message d'erreur
-            modelAndView.addObject("error", e.getMessage());
-
-            // Récupération des listes pour réaffichage du formulaire
-            List<CategorieDemande> categories = categorieDemandeService.getAll();
-            List<Nationalite> nationalites = nationaliteService.getAll();
-            List<SituationFamiliale> situations = situationFamilialeService.getAll();
-            List<Document> documents = documentService.getAllCommuns();
-
-            modelAndView.addObject("categories", categories);
-            modelAndView.addObject("nationalites", nationalites);
-            modelAndView.addObject("situations", situations);
-            modelAndView.addObject("documents", documents);
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("error", "Erreur lors de l'enregistrement : " + e.getMessage());
         }
 
         return modelAndView;
     }
 
+    @InitBinder("demandeur")
+    public void initDemandeurBinder(WebDataBinder binder) {
+        binder.setFieldDefaultPrefix("demandeur.");
+    }
+
+    @InitBinder("passeport")
+    public void initPasseportBinder(WebDataBinder binder) {
+        binder.setFieldDefaultPrefix("passeport.");
+    }
+
+    @InitBinder("visaTransformable")
+    public void initVisaBinder(WebDataBinder binder) {
+        binder.setFieldDefaultPrefix("visaTransformable.");
+    }
 }

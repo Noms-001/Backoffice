@@ -2,6 +2,7 @@ package com.example.backoffice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.example.backoffice.entity.Passeport;
 import com.example.backoffice.repository.PasseportRepository;
 
@@ -17,5 +18,9 @@ public class PasseportService {
         }
 
         return passeportRepository.save(passeport);
+    }
+
+    public Passeport getByReference(String reference) {
+        return passeportRepository.findByReference(reference);
     }
 }

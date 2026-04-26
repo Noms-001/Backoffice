@@ -18,5 +18,8 @@ public class DemandeurService {
         return demandeurRepository.save(demandeur);
     }
 
-    
+    public Demandeur find(Demandeur demandeur) {
+        return demandeurRepository.findByNomAndPrenomAndAdresseMada(demandeur.getNom(), demandeur.getPrenom(),
+                demandeur.getAdresseMada()).stream().findFirst().orElse(null);
+    }
 }

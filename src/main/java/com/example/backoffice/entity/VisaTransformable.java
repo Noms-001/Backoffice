@@ -1,104 +1,74 @@
 package com.example.backoffice.entity;
 
 import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class VisaTransformable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "numero_visa", nullable = false)
     private String numeroVisa;
+
+    @Column(name = "date_entree")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dateEntree;
+
+    @Column(name = "lieu_entree")
     private String lieuEntree;
+
+    @Column(name = "date_sortie")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dateSortie;
+
+    @Column(name = "lieu_sortie")
     private String lieuSortie;
 
-    @OneToOne
-    private Demande demande;
+    @OneToMany(mappedBy = "visaTransformable")
+    private List<Demande> demandes;
 
     @ManyToOne
+    @JoinColumn(name = "id_passeport", nullable = false)
     private Passeport passeport;
 
-    public VisaTransformable() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNumeroVisa() {
-        return numeroVisa;
-    }
-
+    // Méthodes setter avec validation (conservées)
     public void setNumeroVisa(String numeroVisa) {
         if (numeroVisa == null) {
-            throw new IllegalArgumentException("l'argument est obligatoire");
+            throw new IllegalArgumentException("Numero visa obligatoire");
         }
         this.numeroVisa = numeroVisa;
     }
 
-    public LocalDate getDateEntree() {
-        return dateEntree;
-    }
-
     public void setDateEntree(LocalDate dateEntree) {
         if (dateEntree == null) {
-            throw new IllegalArgumentException("l'argument est obligatoire");
+            throw new IllegalArgumentException("Date d'entrée obligatoire");
         }
         this.dateEntree = dateEntree;
     }
 
-    public String getLieuEntree() {
-        return lieuEntree;
-    }
-
     public void setLieuEntree(String lieuEntree) {
         if (lieuEntree == null) {
-            throw new IllegalArgumentException("l'argument est obligatoire");
+            throw new IllegalArgumentException("Lieu d'entrée obligatoire");
         }
         this.lieuEntree = lieuEntree;
-    }
-
-    public LocalDate getDateSortie() {
-        return dateSortie;
-    }
-
-    public void setDateSortie(LocalDate dateSortie) {
-        this.dateSortie = dateSortie;
-    }
-
-    public String getLieuSortie() {
-        return lieuSortie;
-    }
-
-    public void setLieuSortie(String lieuSortie) {
-        this.lieuSortie = lieuSortie;
-    }
-
-    public Demande getDemande() {
-        return demande;
-    }
-
-    public void setDemande(Demande demande) {
-        this.demande = demande;
-    }
-
-    public Passeport getPasseport() {
-        return passeport;
-    }
-
-    public void setPasseport(Passeport passeport) {
-        this.passeport = passeport;
     }
 }
