@@ -3,6 +3,8 @@ package com.example.backoffice.entity;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,8 +13,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Demandeur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +35,7 @@ public class Demandeur {
     private String nomJeuneFille;
 
     @Column(name = "date_naissance", nullable = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dateNaissance;
 
     @Column(name = "lieu_naissance", nullable = false)
@@ -54,46 +63,12 @@ public class Demandeur {
     @OneToMany(mappedBy = "demandeur")
     private List<Demande> demandes;
 
-    public Demandeur() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
+    // Méthodes setter avec validation (conservées car Lombok ne gère pas les validations)
     public void setNom(String nom) {
         if (nom == null) {
             throw new IllegalArgumentException("Nom obligatoire");
         }
         this.nom = nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
-    public String getNomJeuneFille() {
-        return nomJeuneFille;
-    }
-
-    public void setNomJeuneFille(String nomJeuneFille) {
-        this.nomJeuneFille = nomJeuneFille;
-    }
-
-    public LocalDate getDateNaissance() {
-        return dateNaissance;
     }
 
     public void setDateNaissance(LocalDate dateNaissance) {
@@ -103,19 +78,11 @@ public class Demandeur {
         this.dateNaissance = dateNaissance;
     }
 
-    public String getLieuNaissance() {
-        return lieuNaissance;
-    }
-
     public void setLieuNaissance(String lieuNaissance) {
         if (lieuNaissance == null) {
             throw new IllegalArgumentException("Lieu de naissance obligatoire");
         }
         this.lieuNaissance = lieuNaissance;
-    }
-
-    public SituationFamiliale getSituationFamiliale() {
-        return situationFamiliale;
     }
 
     public void setSituationFamiliale(SituationFamiliale situationFamiliale) {
@@ -125,19 +92,11 @@ public class Demandeur {
         this.situationFamiliale = situationFamiliale;
     }
 
-    public Nationalite getNationalite() {
-        return nationalite;
-    }
-
     public void setNationalite(Nationalite nationalite) {
         if (nationalite == null) {
             throw new IllegalArgumentException("Nationalité obligatoire");
         }
         this.nationalite = nationalite;
-    }
-
-    public String getAdresseMada() {
-        return adresseMada;
     }
 
     public void setAdresseMada(String adresseMada) {
@@ -147,38 +106,10 @@ public class Demandeur {
         this.adresseMada = adresseMada;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getNumero() {
-        return numero;
-    }
-
     public void setNumero(String numero) {
         if (numero == null) {
             throw new IllegalArgumentException("Numero obligatoire");
         }
         this.numero = numero;
-    }
-
-    public List<Passeport> getPasseports() {
-        return passeports;
-    }
-
-    public void setPasseports(List<Passeport> passeports) {
-        this.passeports = passeports;
-    }
-
-    public List<Demande> getDemandes() {
-        return demandes;
-    }
-
-    public void setDemandes(List<Demande> demandes) {
-        this.demandes = demandes;
     }
 }

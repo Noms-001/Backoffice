@@ -8,42 +8,24 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CategorieDemande {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     private String libelle;
 
     @ManyToMany
-    @JoinTable(name = "categorie_document", joinColumns = @JoinColumn(name = "id_categorie_demande"), inverseJoinColumns = @JoinColumn(name = "id_document"))
+    @JoinTable(name = "categorie_document", 
+               joinColumns = @JoinColumn(name = "id_categorie_demande"), 
+               inverseJoinColumns = @JoinColumn(name = "id_document"))
     private List<Document> documents;
-
-    public CategorieDemande() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getLibelle() {
-        return libelle;
-    }
-
-    public void setLibelle(String libelle) {
-        this.libelle = libelle;
-    }
-
-    public List<Document> getDocuments() {
-        return documents;
-    }
-
-    public void setDocuments(List<Document> documents) {
-        this.documents = documents;
-    }
 }
