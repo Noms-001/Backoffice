@@ -9,6 +9,6 @@ cd /d C:\Users\Nomena Christian\Documents\Workflow\VISA\Backoffice
 call mvn clean package -DskipTests
 
 REM === COPIE DANS TOMCAT ===
-copy target\backoffice-0.0.1-SNAPSHOT.war C:\apache-tomcat-10.1.34\webapps\
+copy target\backoffice-0.0.1-SNAPSHOT.war C:\apache-tomcat-10.1.34\webapps\backoffice.war
 
 pause
