@@ -53,7 +53,11 @@
             <i class="bi bi-arrow-left-short"></i> Retour
         </button>
         <button type="button" class="btn btn-success btn-navigation" id="submitBtn">
+            <% if(demande == null) { %>
             <i class="bi bi-send-check"></i> Soumettre la demande
+            <% } else { %>
+            <i class="bi bi-pencil me-2"></i> Modifier la demande
+            <% } %>
         </button>
     </div>
 </div>
