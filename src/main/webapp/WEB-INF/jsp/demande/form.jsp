@@ -31,8 +31,15 @@
             <div class="card-header-custom">
                 <div class="d-flex justify-content-between align-items-center flex-wrap">
                     <div>
-                        <h3 class="mb-1 text-white"><i class="bi bi-shield-check me-2"></i>Visa transformable long
-                            séjour</h3>
+                        <% if(demande != null) { %>
+                        <h3 class="mb-1 text-white">
+                            <i class="bi bi-pencil-square me-2"></i>Modification de la demande
+                        </h3>
+                        <% } else { %>
+                        <h3 class="mb-1 text-white">
+                            <i class="bi bi-shield-check me-2"></i>Visa transformable long séjour
+                        </h3>
+                        <% } %>
                         <p class="mb-0 opacity-75 text-white" style="font-size: 0.9rem;">Résident · Investisseur ·
                             Professionnel</p>
                     </div>

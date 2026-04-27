@@ -38,11 +38,11 @@
             <div class="invalid-feedback">Lieu entrée requis</div>
         </div>
         <div class="col-md-6">
-            <label class="form-label">Date sortie (optionnel)</label>
+            <label class="form-label">Date sortie </label>
             <input type="date" class="form-control" id="date_sortie" name="visaTransformable.dateSortie" value="<%= visaTransformable != null ? visaTransformable.getDateSortie() : null %>">
         </div>
         <div class="col-md-6">
-            <label class="form-label">Lieu sortie (optionnel)</label>
+            <label class="form-label">Lieu sortie </label>
             <input type="text" class="form-control" id="lieu_sortie" name="visaTransformable.lieuSortie" value="<%= visaTransformable != null ? visaTransformable.getLieuSortie() : "" %>" placeholder="Toliara / Nosy Be">
         </div>
     </div>
