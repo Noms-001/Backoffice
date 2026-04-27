@@ -58,6 +58,15 @@ public class DemandeService {
     public String saveNouveauTitre(Demandeur demandeur, Passeport passeport, VisaTransformable visaTransformable,
             List<Document> documents, Long idCategorieDemande, Long idDemande) {
 
+        if(idDemande != null) {
+            List<HistoriqueDemande> historiqueDemandes = historiqueRepository.findByDemandeIdOrderByDateChangementDesc(idDemande);
+            if(!historiqueDemandes.isEmpty() || historiqueDemandes != null) {
+                if(historiqueDemandes.get(0).getStatutDemande().getId() != StatutDemandeEnum.CREER.getCode()) {
+                    throw new RuntimeException("La demande n'est plus modifiable !");
+                }
+            }
+        }
+
         // 1. Save Demandeur
         Demandeur savedDemandeur = demandeurService.find(demandeur);
         if (savedDemandeur == null) {

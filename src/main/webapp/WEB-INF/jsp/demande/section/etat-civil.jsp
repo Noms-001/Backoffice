@@ -20,7 +20,7 @@
             <div class="invalid-feedback">Nom obligatoire</div>
         </div>
         <div class="col-md-6">
-            <label class="form-label">Prénom (optionnel)</label>
+            <label class="form-label">Prénom </label>
             <input type="text" class="form-control" id="prenom" name="demandeur.prenom" placeholder="Jean" value="<%= demande != null ? demande.getDemandeur().getPrenom() : "" %>">
         </div>
         <div class="col-md-6">
@@ -69,7 +69,7 @@
             <div class="invalid-feedback">Adresse obligatoire</div>
         </div>
         <div class="col-md-6">
-            <label class="form-label">Email (optionnel)</label>
+            <label class="form-label">Email </label>
             <input type="email" class="form-control" id="email" name="demandeur.email" placeholder="contact@exemple.mg" value="<%= demande != null ? demande.getDemandeur().getEmail() : "" %>">
         </div>
         <div class="col-md-6">
