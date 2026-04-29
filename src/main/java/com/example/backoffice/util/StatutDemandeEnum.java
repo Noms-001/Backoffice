@@ -2,7 +2,9 @@ package com.example.backoffice.util;
 
 public enum StatutDemandeEnum {
     
-    CREER(1L);
+    CREER(1L),
+    APPROUVER(2L),
+    SCAN_TERMINE(3L);
 
     private final Long code;
 
