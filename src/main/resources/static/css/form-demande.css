@@ -101,10 +101,11 @@ body {
 
 .form-label {
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #2c5f6e;
     margin-bottom: 0.4rem;
-    color: #0f2e3a;
-    letter-spacing: -0.2px;
 }
 
 .form-control,

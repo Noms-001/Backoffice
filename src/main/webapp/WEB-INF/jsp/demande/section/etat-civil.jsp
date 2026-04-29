@@ -10,7 +10,7 @@
     if(demande != null)
 %>
 <div id="step1" class="form-section step-content animate-in">
-    <h5 class="mb-4 fw-bold">
+    <h5 class="mb-4 fw-bold" style="color: #1B5E5A;">
         <i class="bi bi-person-vcard me-2 text-success"></i>Identité
     </h5>
     <div class="row g-4">

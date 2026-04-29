@@ -10,7 +10,7 @@
     VisaTransformable visaTransformable = demande != null ? demande.getVisaTransformable() : null;
 %>
 <div id="step3" class="form-section step-content" style="display: none;">
-    <h5 class="mb-4 fw-bold"><i class="bi bi-stamp"></i> Visa de court séjour / transformable</h5>
+    <h5 class="mb-4 fw-bold" style="color: #1B5E5A;"><i class="bi bi-stamp"></i> Visa de court séjour / transformable</h5>
     <div class="row g-4">
         <div class="col-md-6">
             <label class="form-label required-field">Numéro de visa</label>
