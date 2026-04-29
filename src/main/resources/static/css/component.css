@@ -1,0 +1,239 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(145deg, #e9f0f5 0%, #d9e2ec 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* SIDEBAR STYLES */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 280px;
+    background: linear-gradient(180deg, #0a2a2f 0%, #0F2E3A 100%);
+    backdrop-filter: blur(0px);
+    z-index: 1050;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar.closed {
+    transform: translateX(-100%);
+}
+
+.sidebar-header {
+    padding: 1.5rem 1.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-header h4 {
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: -0.3px;
+}
+
+.sidebar-header p {
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+.nav-sidebar .nav-item {
+    margin-bottom: 0.3rem;
+}
+
+.nav-sidebar .nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.75rem 1.2rem;
+    border-radius: 12px;
+    margin: 0 0.7rem;
+    transition: all 0.2s;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-sidebar .nav-link i {
+    font-size: 1.25rem;
+    width: 28px;
+}
+
+.nav-sidebar .nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transform: translateX(4px);
+}
+
+.nav-sidebar .nav-link.active {
+    background: #1B5E5A;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-footer {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    padding: 1rem;
+    font-size: 0.7rem;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 2rem;
+}
+
+/* MAIN CONTENT */
+.main-content {
+    margin-left: 280px;
+    transition: margin-left 0.3s ease;
+    padding: 1.5rem;
+    min-height: 100vh;
+}
+
+.main-content.expanded {
+    margin-left: 0;
+}
+
+/* NAVBAR */
+.navbar-custom {
+    background: white;
+    border-radius: 1.2rem;
+    padding: 0.7rem 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    margin-bottom: 2rem;
+    border: 1px solid #e2edf2;
+}
+
+.toggle-btn {
+    background: #f0f5f9;
+    border: none;
+    font-size: 1.4rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    color: #1B5E5A;
+    transition: 0.2s;
+}
+
+.toggle-btn:hover {
+    background: #e2edf2;
+    color: #0e4a46;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    background: #1B5E5A;
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+/* CARD CONTENU DYNAMIQUE */
+.dynamic-card {
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eef3f8;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.card-header-section {
+    background: #fafefd;
+    padding: 1.2rem 1.8rem;
+    border-bottom: 2px solid #e9f0f5;
+}
+
+.filter-bar-simple {
+    background: #f8fafc;
+    border-radius: 1rem;
+    padding: 0.8rem 1.2rem;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.8rem;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.status-encours {
+    background: #fff3e0;
+    color: #c47b2e;
+}
+
+.status-valide {
+    background: #e0f7f2;
+    color: #1d6f63;
+}
+
+.status-refuse {
+    background: #fee9e9;
+    color: #c23d3d;
+}
+
+.table-demandes th {
+    background: #f1f6fa;
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.btn-outline-custom {
+    border-radius: 2rem;
+    border: 1px solid #cbdde6;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.9rem;
+    transition: 0.2s;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 260px;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .navbar-custom {
+        padding: 0.5rem 1rem;
+    }
+
+    .sidebar-toggle-mobile {
+        display: block;
+    }
+}
+
+@media (min-width: 769px) {
+    .sidebar.always-visible {
+        transform: translateX(0) !important;
+    }
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #8ba3b8;
+}
