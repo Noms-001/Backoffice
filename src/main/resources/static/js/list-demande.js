@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <td>${formatDate(d.dateDemande)}</td>
                     <td>${getStatutBadge(d.statut)}</td>
                     <td>
-                        <button class="btn btn-modifier edit-btn" data-id="${d.id}">
+                        <button class="btn btn-modifier edit-btn" data-id="${d.id}" data-view="demande-edit">
                             Modifier
                         </button>
                     </td>
