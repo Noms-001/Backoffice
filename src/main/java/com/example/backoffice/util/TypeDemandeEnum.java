@@ -4,7 +4,7 @@ public enum TypeDemandeEnum {
 
     NOUVEAU_TITRE(1L),
     DUPLICATA(2L),
-    TRANSFERT(3L);
+    TRANSFERT_VISA(3L);
 
     private final Long code;
 

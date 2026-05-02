@@ -116,7 +116,7 @@ INSERT INTO nationalite (libelle) VALUES('Zimbabwéenne');
 
 INSERT INTO type_demande (libelle) VALUES ('Nouveau titre');
 INSERT INTO type_demande (libelle) VALUES ('Duplicata');
-INSERT INTO type_demande (libelle) VALUES ('Transfert');
+INSERT INTO type_demande (libelle) VALUES ('Transfert de visa');
 
 INSERT INTO categorie_demande (libelle) VALUES ('Travailleur');
 INSERT INTO categorie_demande (libelle) VALUES ('Investisseur');
@@ -151,3 +151,4 @@ INSERT INTO categorie_document (id_categorie_demande, id_document)
 SELECT id, 13 FROM categorie_demande WHERE libelle = 'Travailleur';
 
 INSERT INTO statut_demande (libelle) VALUES ('CREER');
+INSERT INTO statut_demande (libelle) VALUES ('APPROUVER');
