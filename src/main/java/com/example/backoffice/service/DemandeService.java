@@ -2,10 +2,12 @@ package com.example.backoffice.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backoffice.dto.DemandeDTO;
 import com.example.backoffice.entity.*;
@@ -56,6 +58,9 @@ public class DemandeService {
 
     @Autowired
     private VisaService visaService;
+    
+    @Autowired
+    private DocumentService documentService;
 
     public Demande save(Demande demande) {
         if (demande == null) {
@@ -65,8 +70,8 @@ public class DemandeService {
     }
 
     public void processDemande(Demandeur demandeur, Passeport passeport, VisaTransformable visaTransformable,
-            List<Document> documents, Long idCategorieDemande, Long idTypeDemande) {
-        Demande demande = saveNouveauTitre(demandeur, passeport, visaTransformable, documents, idCategorieDemande,
+            Map<String, MultipartFile> documentFiles, Long idCategorieDemande, Long idTypeDemande)  throws Exception {
+        Demande demande = saveNouveauTitre(demandeur, passeport, visaTransformable, documentFiles, idCategorieDemande,
                 null);
         validerDemande(demande, passeport);
         createDemande(
@@ -74,7 +79,6 @@ public class DemandeService {
                 demande.getCategorieDemande(),
                 idTypeDemande,
                 demande.getVisaTransformable(),
-                null,
                 "Demande transfert de visa créé");
     }
 
@@ -114,7 +118,6 @@ public class DemandeService {
                 visa.getDemande().getCategorieDemande(),
                 TypeDemandeEnum.TRANSFERT_VISA.getCode(),
                 visa.getDemande().getVisaTransformable(),
-                null,
                 "Demande transfert de visa créé");
         // 2. Mise à jour passeport avec même demandeur
         passeport.setId(savedDemande.getVisaTransformable().getPasseport().getId());
@@ -143,14 +146,13 @@ public class DemandeService {
                 original.getDemande().getCategorieDemande(),
                 TypeDemandeEnum.DUPLICATA.getCode(),
                 original.getDemande().getVisaTransformable(),
-                null,
                 "Demande duplicata créé");
 
         return savedDemande;
     }
 
     public Demande saveNouveauTitre(Demandeur demandeur, Passeport passeport, VisaTransformable visaTransformable,
-            List<Document> documents, Long idCategorieDemande, Long idDemande) {
+            Map<String, MultipartFile> documentFiles, Long idCategorieDemande, Long idDemande) throws Exception {
         if (idDemande != null) {
             List<HistoriqueDemande> historiqueDemandes = historiqueRepository
                     .findByDemandeIdOrderByDateChangementDesc(idDemande);
@@ -192,13 +194,23 @@ public class DemandeService {
                 .orElseThrow(() -> new RuntimeException("CategorieDemande introuvable"));
 
         Demande savedDemande = createDemande(savedDemandeur, categorieDemande,
-                TypeDemandeEnum.NOUVEAU_TITRE.getCode(), savedVisa, documents, "Demande nouveau titre créé");
+                TypeDemandeEnum.NOUVEAU_TITRE.getCode(), savedVisa, "Demande nouveau titre créé");
 
+        // 5. Upload des documents
+        List<Document> uploadedDocs = documentService.uploadDocuments(savedDemande, documentFiles);
+        
+        // 6. Vérifier si tous les documents sont uploadés
+        if (documentService.areAllDocumentsUploaded(savedDemande, categorieDemande.getDocuments(), uploadedDocs)) {
+            // Changer le statut en SCAN_TERMINE
+            historiqueDemandeService.create(savedDemande, StatutDemandeEnum.SCAN_TERMINE.getCode(), 
+                    "Tous les documents ont été uploadés");
+        }
+        
         return savedDemande;
     }
 
     public Demande createDemande(Demandeur demandeur, CategorieDemande categorieDemande, Long idTypeDemande,
-            VisaTransformable visaTransformable, List<Document> documents, String commentaire) {
+            VisaTransformable visaTransformable, String commentaire) {
         Demande demande = new Demande();
         demande.setDemandeur(demandeur);
 
@@ -210,7 +222,6 @@ public class DemandeService {
         demande.setCategorieDemande(categorieDemande);
         demande.setVisaTransformable(visaTransformable);
         demande.setDateDemande(LocalDate.now());
-        demande.setDocuments(documents);
 
         Demande savedDemande = demandeRepository.save(demande);
 
@@ -250,15 +261,6 @@ public class DemandeService {
                 dto.setPrenomDemandeur(demande.getDemandeur().getPrenom());
             }
 
-            // Visa
-            if (demande.getVisaTransformable() != null) {
-                dto.setNumeroVisaTransformable(
-                        demande.getVisaTransformable().getNumeroVisa());
-                if (demande.getVisaTransformable().getPasseport() != null) {
-                    dto.setNumeroPasseport(demande.getVisaTransformable().getPasseport().getReference());
-                }
-            }
-
             // Catégorie
             if (demande.getCategorieDemande() != null) {
                 dto.setCategorieDemande(
@@ -278,6 +280,9 @@ public class DemandeService {
                 dto.setStatutDemande(
                         historiques.get(0).getStatutDemande().getLibelle());
             }
+
+            // Type
+            dto.setTypeDemande(demande.getTypeDemande().getLibelle());
 
             return dto;
         }).collect(Collectors.toList());
