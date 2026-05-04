@@ -127,8 +127,7 @@
                                 <thead>
                                     <tr>
                                         <th>Nom & Prénom</th>
-                                        <th>N° Passeport</th>
-                                        <th>N° Visa transformable</th>
+                                        <th>Type</th>
                                         <th>Catégorie</th>
                                         <th>Date demande</th>
                                         <th>Statut</th>

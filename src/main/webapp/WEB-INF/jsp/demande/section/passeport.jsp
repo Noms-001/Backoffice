@@ -5,6 +5,7 @@
     Demande demande = (Demande) request.getAttribute("demande");
     Passeport passeport = demande != null  ? demande.getVisaTransformable().getPasseport() : null;
     if(passeport == null) passeport = (Passeport) request.getAttribute("passeport");
+    if(passeport != null && passeport.getReference() == null) passeport = null;
 %>
 <div id="step2" class="form-section step-content" style="display: none;">
     <h5 class="mb-4 fw-bold" style="color: #1B5E5A;"><i class="bi bi-bookmark-check"></i> Passeport en cours de validité</h5>

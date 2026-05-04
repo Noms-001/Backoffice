@@ -1,6 +1,8 @@
 package com.example.backoffice.controller;
 
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -138,7 +141,8 @@ public class DemandeController {
                 redirectAttributes.addFlashAttribute("idTypeDemande", TypeDemandeEnum.DUPLICATA.getCode());
                 return modelAndView;
             }
-            redirectAttributes.addFlashAttribute("message",  "Demande de duplicata de carte de résident effectué avec succès");
+            redirectAttributes.addFlashAttribute("message",
+                    "Demande de duplicata de carte de résident effectué avec succès");
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Erreur lors de l'enregistrement : " + e.getMessage());
@@ -153,7 +157,9 @@ public class DemandeController {
             @ModelAttribute("visaTransformable") VisaTransformable visaTransformable,
             @RequestParam Long categorieDemandeId,
             @RequestParam(name = "demandeId", required = false) Long demandeId,
-            @RequestParam List<Long> documentIds,
+            @RequestParam(required = false) String dateDebutStr,
+            @RequestParam(required = false) String dateFinStr,
+            @RequestParam Map<String, MultipartFile> documentFiles, 
             @RequestParam(required = false) Long idTypeDemande,
             RedirectAttributes redirectAttributes) {
 
@@ -161,28 +167,18 @@ public class DemandeController {
 
         if (idTypeDemande != null) {
             try {
-                modelAndView.setViewName("redirect:/resident");
-                List<Document> documents = documentService.getAllByIds(documentIds);
-                demandeService.processDemande(demandeur, passeport, visaTransformable, documents, categorieDemandeId, idTypeDemande);
+                modelAndView.setViewName("redirect:/demande/list");
+                demandeService.processDemande(demandeur, passeport, visaTransformable, documentFiles,
+                        categorieDemandeId, idTypeDemande, dateDebutStr, dateFinStr);
                 return modelAndView;
-
             } catch (Exception e) {
                 e.printStackTrace();
                 redirectAttributes.addFlashAttribute("error", "Erreur lors du process : " + e.getMessage());
             }
         } else {
-
-            if (demandeId != null) {
-                modelAndView.setViewName("redirect:/demande/list");
-                redirectAttributes.addFlashAttribute("message", "Demande mise à jour avec succès");
-                return modelAndView;
-            }
-
             try {
-                List<Document> documents = documentService.getAllByIds(documentIds);
-
                 Demande demande = demandeService.saveNouveauTitre(demandeur, passeport, visaTransformable,
-                        documents, categorieDemandeId, demandeId);
+                        documentFiles, categorieDemandeId, demandeId);
 
                 if (demande == null) {
                     throw new RuntimeException("Echec de l'enregistrement de la demande");

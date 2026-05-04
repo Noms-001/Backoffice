@@ -7,13 +7,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -47,9 +47,6 @@ public class Demande {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate dateDemande;
 
-    @ManyToMany
-    @JoinTable(name = "document_demande", 
-               joinColumns = @JoinColumn(name = "id_demande"), 
-               inverseJoinColumns = @JoinColumn(name = "id_document"))
-    private List<Document> documents;
+    @OneToMany(mappedBy = "demande", fetch = FetchType.LAZY)
+    private List<DocumentDemande> documentDemandes;
 }

@@ -83,58 +83,6 @@
         showAlert(message, false);
     }
 
-    // Soumission du formulaire (simulation d'enregistrement)
-    function handleSubmit(event) {
-        event.preventDefault();
-        clearValidationErrors();
-        hideAlert();
-
-        const carteNum = carteResidenceInput.value;
-        const validation = validateCarteNumber(carteNum);
-        if (!validation.valid) {
-            showFieldError(validation.message);
-            carteResidenceInput.focus();
-            return;
-        }
-
-        // Nettoyage et mise en forme
-        const cleanCarteNum = carteNum.trim().toUpperCase();
-        const motif = motifTextarea.value.trim();
-
-        // Simulation d'appel API / traitement succès
-        const dateDemande = new Date().toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' });
-
-        let successMessage = `DEMANDE DE DUPLICATA ENREGISTRÉE AVEC SUCCÈS !\n\n`;
-        successMessage += `Carte de résidence n° : ${cleanCarteNum}\n`;
-        successMessage += `Date de la demande : ${dateDemande}\n`;
-        if (motif !== "") {
-            successMessage += `Motif indiqué : "${motif}"\n`;
-        } else {
-            successMessage += `Motif : non spécifié (traité comme renouvellement standard)\n`;
-        }
-        successMessage += `\n💡 Un agent vérifiera votre statut résident. Vous recevrez un récépissé provisoire par courriel dans les 48h.`;
-
-        showAlert(successMessage, true);
-
-        // Optionnel: on reset pas automatiquement pour que l'usager puisse noter le numéro de demande
-        // mais on peut lui proposer de réinitialiser après (bouton reset manuel)
-        // On désactive brièvement le submit pour éviter double envoi? (pas nécessaire)
-        // On peut aussi ajouter une animation sur le bouton
-        const submitBtn = form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<i class="bi bi-check2-circle me-1"></i> Transmis !';
-        setTimeout(() => {
-            submitBtn.innerHTML = originalText;
-        }, 2000);
-
-
-        // Ajouter un effet visuel clean
-        form.classList.add('border', 'border-success', 'border-opacity-25');
-        setTimeout(() => {
-            form.classList.remove('border', 'border-success', 'border-opacity-25');
-        }, 1500);
-    }
-
     // Réinitialisation complète du formulaire
     function resetForm() {
         carteResidenceInput.value = '';
@@ -192,9 +140,6 @@
         e.preventDefault();
         resetForm();
     });
-
-    // Ajout de l'événement submit
-    form.addEventListener('submit', handleSubmit);
 
     // Focus init
     carteResidenceInput.focus();

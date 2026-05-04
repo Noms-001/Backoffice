@@ -17,9 +17,9 @@ public class CarteResidentService {
     @Autowired
     private CarteResidentRepository carteResidentRepository;
 
-    public CarteResident createCarteResidentFromDemandeAndPasseport(Demande demande, Passeport passeport) {
+    public CarteResident createCarteResidentFromDemandeAndPasseport(Demande demande, Passeport passeport, LocalDate dateDebut, LocalDate dateFin) {
 
-        CarteResident carteResident = createCarteResident();
+        CarteResident carteResident = createCarteResident(dateDebut, dateFin);
 
         if (carteResident.getDateDebut() == null || carteResident.getDateFin() == null) {
             throw new RuntimeException("Les dates sont obligatoires");
@@ -50,7 +50,7 @@ public class CarteResidentService {
         return ref;
     }
 
-    public CarteResident createCarteResident() {
+    public CarteResident createCarteResident(LocalDate dateDebut, LocalDate dateFin) {
         CarteResident carteResident = new CarteResident();
 
         String reference = generateReference();
@@ -58,9 +58,6 @@ public class CarteResidentService {
         if (reference != null) {
             carteResident.setReference(reference);
         }
-
-        LocalDate dateDebut = LocalDate.now();
-        LocalDate dateFin = dateDebut.plusYears(10);
 
         carteResident.setDateDebut(dateDebut);
         carteResident.setDateFin(dateFin);

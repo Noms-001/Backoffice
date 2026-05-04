@@ -1,0 +1,1 @@
+INSERT INTO statut_demande (libelle) VALUES ('SCAN TERMINER');

@@ -1,0 +1,1 @@
+ALTER TABLE document_demande ADD COLUMN path VARCHAR(255);
