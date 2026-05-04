@@ -127,8 +127,7 @@
                                 <thead>
                                     <tr>
                                         <th>Nom & Prénom</th>
-                                        <th>N° Passeport</th>
-                                        <th>N° Visa transformable</th>
+                                        <th>Type</th>
                                         <th>Catégorie</th>
                                         <th>Date demande</th>
                                         <th>Statut</th>
@@ -162,7 +161,7 @@
     </script>
 
     <script src="${pageContext.request.contextPath}/js/list-demande.js"></script>
-    <script src="${pageContext.request.contextPath}/js/component.js"></script>
+    <!--<script src="${pageContext.request.contextPath}/js/component.js"></script>-->
 </body>
 
 </html>

@@ -2,6 +2,7 @@
 <%@ page import="com.example.backoffice.entity.CategorieDemande" %>
 <%@ page import="com.example.backoffice.entity.Demande" %>
 <%@ page import="com.example.backoffice.entity.Document" %>
+<%@ page import="com.example.backoffice.util.TypeDemandeEnum" %>
 <%@ page import="java.util.List" %>
 <%
     List<CategorieDemande> categories = (List<CategorieDemande>) request.getAttribute("categories");
@@ -29,7 +30,9 @@
 
 <body>
     <!-- SIDEBAR -->
-    <jsp:include page="../component/sidebar.jsp" />
+    <jsp:include page="../component/sidebar.jsp">
+        <jsp:param name="pageContext" value="" />
+    </jsp:include>
     <div class="main-content" id="mainContent">
         <!-- NAVBAR -->
         <jsp:include page="../component/navbar.jsp" />
@@ -42,6 +45,14 @@
                             <% if(demande != null) { %>
                             <h3 class="mb-1 text-white">
                                 <i class="bi bi-pencil-square me-2"></i>Modification de la demande
+                            </h3>
+                            <% } else if(idTypeDemande == TypeDemandeEnum.TRANSFERT_VISA.getCode()) { %>
+                            <h3 class="mb-1 text-white">
+                                <i class="bi bi-shield-check me-2"></i>Demande de transfert de visa
+                            </h3>
+                            <% } else if(idTypeDemande == TypeDemandeEnum.DUPLICATA.getCode()) { %>
+                            <h3 class="mb-1 text-white">
+                                <i class="bi bi-shield-check me-2"></i>Demande de duplicata de carte residence
                             </h3>
                             <% } else { %>
                             <h3 class="mb-1 text-white">
@@ -65,12 +76,10 @@
                     </div>
                 </div>
 
-                <form id="multiStepForm" method="post" action="insert">
-                    <%= request.getAttribute("passeport") %>
+                <form id="multiStepForm" method="post" action="insert" enctype="multipart/form-data">
                     <input type="hidden" name="demandeId" value="<%= demande != null ? demande.getId() : "" %>">
                     <% if(idTypeDemande != null) { %>
-                        <%= idTypeDemande %>
-                    <input type="hidden" name="idTypeDemande" value="<%= idTypeDemande %>">
+                     <input type="hidden" name="idTypeDemande" value="<%= idTypeDemande %>">
                     <% } %>
                     <jsp:include page="section/etat-civil.jsp" />
                     <jsp:include page="section/passeport.jsp" />
@@ -129,7 +138,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath}/js/form-demande.js"></script>
-    <script src="${pageContext.request.contextPath}/js/component.js"></script>
+    <!--<script src="${pageContext.request.contextPath}/js/component.js"></script>-->
 </body>
 
 </html>

@@ -115,6 +115,6 @@
     </div>
 
     <script src="${pageContext.request.contextPath}/js/form-duplicata.js"></script>
-    <script src="${pageContext.request.contextPath}/js/component.js"></script>
+    <!--<script src="${pageContext.request.contextPath}/js/component.js"></script>-->
 </body>
 </html>
