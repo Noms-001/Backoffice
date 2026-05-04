@@ -14,8 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 id: d.id,
                 nom: d.nomDemandeur,
                 prenom: d.prenomDemandeur,
-                passeport: d.numeroPasseport,
-                numeroVisa: d.numeroVisaTransformable,
+                typeDemande: d.typeDemande,
                 categorie: normalizeCategorie(d.categorieDemande),
                 dateDemande: d.dateDemande,
                 statut: normalizeStatut(d.statutDemande)
@@ -35,6 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const s = statut.toLowerCase();
 
         if (s.includes("creer")) return "creer";
+        if (s.includes("approuver")) return "approuver";
+        if (s.includes("scan")) return "scanner";
 
         return "indefini";
     }
@@ -49,22 +50,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ---------- STATUT UI ----------
     function getStatutBadge(statut) {
-        switch (statut) {
-            case 'creer':
-                return '<span class="status-badge status-en-attente"><i class="bi bi-plus-circle"></i> Créé</span>';
-            default:
-                return '<span class="status-badge">Indéfini</span>';
-        }
+        const icon = getStatutIcon(statut);
+        const text = getStatutText(statut);
+        const color = getStatutColor(statut);
+        return `<span class="status-badge status-${color}">${icon} ${text}</span>`;
     }
 
     function getStatutText(statut) {
-        if (statut === "creer") return "Créé";
+        if (statut === "creer") return "Créée";
+        if (statut === "approuver") return "Approuvée";
+        if (statut === "scanner") return "Scan terminé";
         return "Indéfini";
     }
 
+    function getStatutColor(statut) {
+        if (statut === "creer") return "en-attente";
+        if (statut === "approuver") return "approuve";
+        if (statut === "scanner") return "complete";
+        return "rejete";
+    }
+
     function getStatutIcon(statut) {
-        if (statut === "creer") return '<i class="bi bi-plus-circle"></i>';
-        return '<i class="bi bi-question-circle"></i>';
+        switch (statut) {
+            case "creer":
+                return '<i class="bi bi-plus-circle"></i>';
+            case "approuver":
+                return '<i class="bi bi-check-circle"></i>';
+            case "scanner":
+                return '<i class="bi bi-upc-scan"></i>';
+            default:
+                return '<i class="bi bi-question-circle"></i>';
+        }
     }
 
     // ---------- FORMAT ----------
@@ -148,8 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
             html += `
                 <tr>
                     <td><strong>${escapeHtml(d.nom + " " + d.prenom)}</strong></td>
-                    <td>${escapeHtml(d.passeport || "")}</td>
-                    <td>${escapeHtml(d.numeroVisa || "")}</td>
+                    <td>${d.typeDemande}</td>
                     <td>${getCategorieLabel(d.categorie)}</td>
                     <td>${formatDate(d.dateDemande)}</td>
                     <td>${getStatutBadge(d.statut)}</td>

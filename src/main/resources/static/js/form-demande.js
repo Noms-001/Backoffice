@@ -1,8 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const uploadedDocuments = Array.from(
+        document.querySelectorAll('.uploaded-document-id')
+    ).map(input => ({
+        id: parseInt(input.dataset.docId),
+        path: input.dataset.path
+    }));
+
     const selectedDocumentIds = Array.from(
         document.querySelectorAll('.selected-document-id')
     ).map(input => parseInt(input.value));
-    
+
     // ---------- LISTE COMPLETE NATIONALITES pour autocomplete (plus de 50) ----------
     const nationalitesList = [];
 
@@ -93,6 +100,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function getUploadedDoc(docId) {
+        return uploadedDocuments.find(d => d.id === docId);
+    }
+
     function validateCurrentStep() {
         let valid = true;
         if (currentStep === 1) {
@@ -118,44 +129,55 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!catD.value) { valid = false; } else { catD.classList.remove('is-invalid'); }
         }
         else if (currentStep === 4) {
-            let allCommon = true; document.querySelectorAll('.common-doc').forEach(chk => { if (!chk.checked) allCommon = false; });
-            if (!allCommon) { alert("Tous les documents communs doivent être cochés."); valid = false; }
+            let allCommonFiles = true;
+            document.querySelectorAll('.common-doc').forEach(input => {
+                const file = input.files[0];
+                const docId = input.dataset.docId;
+                const uploaded = getUploadedDoc(Number(docId));
+                const alreadyUploaded = uploaded !== undefined;
+
+                if (!alreadyUploaded && (!file || file.size === 0)) {
+                    allCommonFiles = false;
+                    input.classList.add('is-invalid');
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+
+            if (!allCommonFiles) {
+                alert("Tous les documents communs sont obligatoires. Veuillez les uploader.");
+                valid = false;
+            }
+
+            // Vérifier les fichiers spécifiques
             const cat = document.getElementById('categorie_demande').value;
             const catId = parseInt(cat);
-            const selectedDocs = Array.from(
-                document.querySelectorAll('input[name="documentIds"]:checked')
-            ).map(cb => Number(cb.value));
-            let specOk = true;
-            if (catId === 2) {
+            const docs = categorieDocumentsMap[catId];
 
-                const required = categorieDocumentsMap["2"]
-                    .map(d => d.id); // tous les docs obligatoires backend
+            if (docs && docs.length > 0) {
+                let allSpecificFiles = true;
+                docs.forEach(doc => {
+                    const input = document.querySelector(`#doc_${doc.id}`);
+                    const uploaded = getUploadedDoc(Number(doc.id));
+                    const alreadyUploaded = uploaded !== undefined;
 
-                const specOk = required.every(id => selectedDocs.includes(Number(id)));
+                    if (input && !alreadyUploaded && (!input.files || input.files.length === 0 || input.files[0].size === 0)) {
+                        allSpecificFiles = false;
+                        if (input) input.classList.add('is-invalid');
+                    } else if (input) {
+                        input.classList.remove('is-invalid');
+                    }
+                });
 
-                if (!specOk) {
-                    document.getElementById('specificDocsError').innerText =
-                        "Investisseur : documents obligatoires manquants";
+                if (!allSpecificFiles) {
+                    document.getElementById('specificDocsError').innerText = "Tous les documents spécifiques sont obligatoires";
+                    valid = false;
                 } else {
                     document.getElementById('specificDocsError').innerText = "";
                 }
+            } else {
+                valid = true;
             }
-            else if (catId === 1) {
-
-                const required = categorieDocumentsMap["1"]
-                    .map(d => d.id);
-
-                const specOk = required.every(id => selectedDocs.includes(Number(id)));
-
-                if (!specOk) {
-                    document.getElementById('specificDocsError').innerText =
-                        "Travailleur : documents obligatoires manquants";
-                } else {
-                    document.getElementById('specificDocsError').innerText = "";
-                }
-            }
-            else specOk = false;
-            if (!specOk) valid = false;
         }
         return valid;
     }
@@ -164,11 +186,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll("#categorie_document_data option").forEach(opt => {
         const catId = opt.dataset.categorie;
-
         if (!categorieDocumentsMap[catId]) {
             categorieDocumentsMap[catId] = [];
         }
-
         categorieDocumentsMap[catId].push({
             id: opt.value,
             libelle: opt.textContent
@@ -183,21 +203,31 @@ document.addEventListener("DOMContentLoaded", () => {
         const docs = categorieDocumentsMap[catId];
 
         if (!docs || docs.length === 0) {
-            container.innerHTML = `<div class="text-warning">⚠️ Aucun document</div>`;
+            container.innerHTML = `<div class="text-warning">⚠️ Aucun document spécifique requis</div>`;
             return;
         }
 
         let html = "";
-
         docs.forEach(doc => {
-            const checked = selectedDocumentIds.includes(Number(doc.id)) ? "checked" : "";
+            const uploaded = getUploadedDoc(Number(doc.id));
+            const hasFile = uploaded !== undefined;
             html += `
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" name="documentIds" value="${doc.id}" ${checked}>
-                <label class="form-check-label">${doc.libelle}</label>
-            </div>`;
+            <div class="form-group mb-3">
+                <label class="fw-semibold mb-2">${doc.libelle} <span class="text-danger">*</span></label>
+                <input 
+                    type="file" 
+                    class="form-control specific-doc" 
+                    name="documentFiles[${doc.id}]"
+                    id="doc_${doc.id}"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    data-doc-id="${doc.id}"
+                    ${hasFile ? '' : 'required'}>
+                    ${hasFile ? `
+                        <small class="text-success">✓ Document déjà uploadé</small><br>
+                        <a href="${uploaded.path}" target="_blank">Voir le document</a>
+                    ` : '<small class="text-muted">PDF, JPG ou PNG (max 5MB)</small>'}            </div>`;
         });
-
+        console.log(html);
         container.innerHTML = html;
     }
 
@@ -207,12 +237,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function submitFinal() {
         if (isSubmitting) return;
-
         if (currentStep !== 4) return;
         if (!validateCurrentStep()) return;
 
         isSubmitting = true;
-        document.getElementById("multiStepForm").submit();
+
+        // Le formulaire va être soumis normalement avec multipart/form-data
+        // Il faut s'assurer que l'attribut enctype est présent
+        const form = document.getElementById("multiStepForm");
+        form.setAttribute("enctype", "multipart/form-data");
+        form.submit();
     }
 
     document.querySelectorAll('.next-step').forEach(btn => btn.addEventListener('click', goNext));

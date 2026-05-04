@@ -2,15 +2,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const NAVBAR_CONFIG = {
         "demande-form": {
-            title: "Nouveau titre",
+            title: "Demande de nouveau titre",
             desc: "Formulaire d'obtention de titre de séjour"
         },
         "transfert-form": {
-            title: "Transfert de visa",
+            title: "DEmande de transfert de visa",
             desc: "Changement de passeport"
         },
         "duplicata-form": {
-            title: "Duplicata",
+            title: "Demande duplicata",
             desc: "Demande de duplicata de document"
         },
         "demande-list": {
