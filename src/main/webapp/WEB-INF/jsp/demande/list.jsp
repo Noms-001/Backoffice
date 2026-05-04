@@ -161,7 +161,7 @@
     </script>
 
     <script src="${pageContext.request.contextPath}/js/list-demande.js"></script>
-    <!--<script src="${pageContext.request.contextPath}/js/component.js"></script>-->
+    <script src="${pageContext.request.contextPath}/js/component.js"></script>
 </body>
 
 </html>

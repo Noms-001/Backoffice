@@ -87,16 +87,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // step management
     let currentStep = 1;
-    const totalSteps = 4;
-    const stepContents = { 1: document.getElementById('step1'), 2: document.getElementById('step2'), 3: document.getElementById('step3'), 4: document.getElementById('step4') };
-    const stepBadges = { 1: document.getElementById('step1Badge'), 2: document.getElementById('step2Badge'), 3: document.getElementById('step3Badge'), 4: document.getElementById('step4Badge') };
+    const totalSteps = parseInt(document.getElementById('totalSteps').value);
+    // const typeDemande = document.getElementById('typeDemande').value;
+    const docStepIndex = parseInt(document.getElementById('docStepIndex')?.value || 4);
+    const stepContents = {};
+    const stepBadges = {};
+
+    for (let i = 1; i <= totalSteps; i++) {
+        stepContents[i] = document.getElementById('step' + i);
+        stepBadges[i] = document.getElementById('step' + i + 'Badge');
+    }
 
     function updateStepDisplay() {
         for (let i = 1; i <= totalSteps; i++) {
-            stepContents[i].style.display = i === currentStep ? 'block' : 'none';
-            if (i === currentStep) { stepBadges[i].classList.add('active-step'); stepBadges[i].classList.remove('completed-step'); }
-            else if (i < currentStep) { stepBadges[i].classList.add('completed-step'); stepBadges[i].classList.remove('active-step'); }
-            else { stepBadges[i].classList.remove('active-step', 'completed-step'); }
+
+            if (stepContents[i]) {
+                stepContents[i].style.display = i === currentStep ? 'block' : 'none';
+            }
+
+            if (stepBadges[i]) {
+                if (i === currentStep) {
+                    stepBadges[i].classList.add('active-step');
+                    stepBadges[i].classList.remove('completed-step');
+                } else if (i < currentStep) {
+                    stepBadges[i].classList.add('completed-step');
+                    stepBadges[i].classList.remove('active-step');
+                } else {
+                    stepBadges[i].classList.remove('active-step', 'completed-step');
+                }
+            }
         }
     }
 
@@ -127,8 +146,32 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!dateE.value) { dateE.classList.add('is-invalid'); valid = false; } else dateE.classList.remove('is-invalid');
             if (!lieuE.value.trim()) { lieuE.classList.add('is-invalid'); valid = false; } else lieuE.classList.remove('is-invalid');
             if (!catD.value) { valid = false; } else { catD.classList.remove('is-invalid'); }
-        }
-        else if (currentStep === 4) {
+        } else if (currentStep === 4 && docStepIndex === 5) {
+            // cas TRANSFERT / DUPLICATA (step 4 = carte ou visa)
+
+            const dateDebut = document.getElementById('date_debut');
+            const dateFin = document.getElementById('date_fin');
+
+            if (!dateDebut.value) {
+                dateDebut.classList.add('is-invalid');
+                valid = false;
+            } else {
+                dateDebut.classList.remove('is-invalid');
+            }
+
+            if (!dateFin.value) {
+                dateFin.classList.add('is-invalid');
+                valid = false;
+            } else {
+                dateFin.classList.remove('is-invalid');
+            }
+
+            if (dateDebut.value && dateFin.value && new Date(dateFin.value) <= new Date(dateDebut.value)) {
+                alert("Date fin doit être après date début");
+                dateFin.classList.add('is-invalid');
+                valid = false;
+            }
+        } else if (currentStep === docStepIndex) {
             let allCommonFiles = true;
             document.querySelectorAll('.common-doc').forEach(input => {
                 const file = input.files[0];
@@ -227,7 +270,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         <a href="${uploaded.path}" target="_blank">Voir le document</a>
                     ` : '<small class="text-muted">PDF, JPG ou PNG (max 5MB)</small>'}            </div>`;
         });
-        console.log(html);
         container.innerHTML = html;
     }
 
@@ -237,7 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function submitFinal() {
         if (isSubmitting) return;
-        if (currentStep !== 4) return;
+        if (currentStep !== totalSteps) return;
         if (!validateCurrentStep()) return;
 
         isSubmitting = true;

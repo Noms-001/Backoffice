@@ -6,8 +6,9 @@
 <%
     List<Document> documents = (List<Document>) request.getAttribute("documents");
     Demande demande = (Demande) request.getAttribute("demande");
+    String index = request.getParameter("index");
 %>
-<div id="step4" class="form-section step-content" style="display: none;">
+<div id="step<%= index %>" class="form-section step-content" style="display: none;">
     <h5 class="mb-3 fw-bold" style="color: #1B5E5A;"><i class="bi bi-file-earmark-zip"></i> Pièces justificatives</h5>
     <div class="alert alert-success bg-opacity-10 border-0 rounded-4">
         <i class="bi bi-info-circle-fill me-2"></i>
@@ -66,7 +67,7 @@
         <button type="button" class="btn btn-outline-secondary btn-navigation prev-step">
             <i class="bi bi-arrow-left-short"></i> Retour
         </button>
-        <button type="button" class="btn btn-success btn-navigation" id="submitBtn">
+        <button type="submit" class="btn btn-success btn-navigation" id="submitBtn">
             <% if(demande == null) { %>
             <i class="bi bi-send-check"></i> Soumettre la demande   
             <% } else { %>
@@ -85,3 +86,5 @@
            data-path="<%= dd.getPath() %>">
 
 <% } } %>
+
+<input type="hidden" id="docStepIndex" value="<%= index %>">

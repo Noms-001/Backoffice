@@ -1,5 +1,6 @@
 package com.example.backoffice.service;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -70,10 +71,10 @@ public class DemandeService {
     }
 
     public void processDemande(Demandeur demandeur, Passeport passeport, VisaTransformable visaTransformable,
-            Map<String, MultipartFile> documentFiles, Long idCategorieDemande, Long idTypeDemande)  throws Exception {
+            Map<String, MultipartFile> documentFiles, Long idCategorieDemande, Long idTypeDemande, String dateDebutStr, String dateFinStr)  throws Exception {
         Demande demande = saveNouveauTitre(demandeur, passeport, visaTransformable, documentFiles, idCategorieDemande,
                 null);
-        validerDemande(demande, passeport);
+        validerDemande(demande, passeport, dateDebutStr, dateFinStr);
         createDemande(
                 demande.getDemandeur(),
                 demande.getCategorieDemande(),
@@ -82,7 +83,7 @@ public class DemandeService {
                 "Demande transfert de visa créé");
     }
 
-    public void validerDemande(Demande demande, Passeport passeport) {
+    public void validerDemande(Demande demande, Passeport passeport, String dateDebutStr, String dateFinStr) {
         if (demande == null) {
             throw new IllegalArgumentException("Demande obligatoire");
         }
@@ -94,13 +95,19 @@ public class DemandeService {
             throw new RuntimeException("Echec de l'enregistrement du statut");
         }
 
+        if(dateDebutStr == null || dateFinStr == null) {
+            throw new RuntimeException("Dates obligatoires");
+        }
+
         Passeport originelPasseport = passeportService.getByReference(passeport.getReference());
-        Visa savedVisa = visaService.createVisaFromDemandeAndPasseport(demande, originelPasseport);
+        LocalDate dateDebut = Date.valueOf(dateDebutStr).toLocalDate();
+        LocalDate dateFin = Date.valueOf(dateFinStr).toLocalDate();
+        Visa savedVisa = visaService.createVisaFromDemandeAndPasseport(demande, originelPasseport, dateDebut, dateFin);
         if (savedVisa == null) {
             throw new RuntimeException("Echec de l'enregistrement du visa");
         }
         CarteResident savedCarte = carteResidentService.createCarteResidentFromDemandeAndPasseport(demande,
-                originelPasseport);
+                originelPasseport, dateDebut, dateFin);
         if (savedCarte == null) {
             throw new RuntimeException("Echec de l'enregistrement de la carte de résident");
         }

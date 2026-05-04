@@ -17,9 +17,9 @@ public class VisaService {
     @Autowired
     private VisaRepository visaRepository;
 
-    public Visa createVisaFromDemandeAndPasseport(Demande demande, Passeport passeport) {
+    public Visa createVisaFromDemandeAndPasseport(Demande demande, Passeport passeport, LocalDate dateDebut, LocalDate dateFin) {
 
-        Visa visa = createVisa();
+        Visa visa = createVisa(dateDebut, dateFin);
 
         if (visa.getDateDebut() == null || visa.getDateFin() == null) {
             throw new RuntimeException("Les dates sont obligatoires");
@@ -52,7 +52,7 @@ public class VisaService {
         return ref;
     }
 
-    private Visa createVisa() {
+    private Visa createVisa(LocalDate dateDebut, LocalDate dateFin) {
         Visa visa = new Visa();
 
         String reference = generateReference();
@@ -60,9 +60,6 @@ public class VisaService {
         if (reference != null) {
             visa.setReference(reference);
         }
-
-        LocalDate dateDebut = LocalDate.now();
-        LocalDate dateFin = dateDebut.plusYears(1);
 
         visa.setDateDebut(dateDebut);
         visa.setDateFin(dateFin);

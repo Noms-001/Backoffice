@@ -157,6 +157,8 @@ public class DemandeController {
             @ModelAttribute("visaTransformable") VisaTransformable visaTransformable,
             @RequestParam Long categorieDemandeId,
             @RequestParam(name = "demandeId", required = false) Long demandeId,
+            @RequestParam(required = false) String dateDebutStr,
+            @RequestParam(required = false) String dateFinStr,
             @RequestParam Map<String, MultipartFile> documentFiles, 
             @RequestParam(required = false) Long idTypeDemande,
             RedirectAttributes redirectAttributes) {
@@ -167,7 +169,7 @@ public class DemandeController {
             try {
                 modelAndView.setViewName("redirect:/demande/list");
                 demandeService.processDemande(demandeur, passeport, visaTransformable, documentFiles,
-                        categorieDemandeId, idTypeDemande);
+                        categorieDemandeId, idTypeDemande, dateDebutStr, dateFinStr);
                 return modelAndView;
             } catch (Exception e) {
                 e.printStackTrace();

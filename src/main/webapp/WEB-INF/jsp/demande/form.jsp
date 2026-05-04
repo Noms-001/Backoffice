@@ -69,11 +69,18 @@
 
                 <!-- Stepper amélioré -->
                 <div class="step-indicator d-flex justify-content-between align-items-center flex-wrap">
-                    <div class="step-badge" id="step1Badge"><i class="bi bi-person me-1"></i> 1. État civil & demande</div>
-                    <div class="step-badge" id="step2Badge"><i class="bi bi-passport me-1"></i> 2. Passeport</div>
-                    <div class="step-badge" id="step3Badge"><i class="bi bi-card-text me-1"></i> 3. Visa entrée</div>
-                    <div class="step-badge" id="step4Badge"><i class="bi bi-file-earmark-check me-1"></i> 4. Justificatifs
-                    </div>
+                    <div class="step-badge" id="step1Badge"><i class="bi bi-person me-1"></i>État civil & demande</div>
+                    <div class="step-badge" id="step2Badge"><i class="bi bi-passport me-1"></i>Passeport</div>
+                    <div class="step-badge" id="step3Badge"><i class="bi bi-card-text me-1"></i>Visa entrée</div>
+                    <% if(idTypeDemande == TypeDemandeEnum.TRANSFERT_VISA.getCode()) { %>
+                    <div class="step-badge" id="step4Badge"><i class="bi bi-card-text me-1"></i>Visa long séjour</div>
+                    <div class="step-badge" id="step5Badge"><i class="bi bi-file-earmark-check me-1"></i>Justificatifs</div>
+                    <% } else if(idTypeDemande == TypeDemandeEnum.DUPLICATA.getCode()) { %>
+                    <div class="step-badge" id="step4Badge"><i class="bi bi-card-text me-1"></i>Carte résident</div>
+                    <div class="step-badge" id="step5Badge"><i class="bi bi-file-earmark-check me-1"></i>Justificatifs</div>
+                    <% } else { %>
+                    <div class="step-badge" id="step4Badge"><i class="bi bi-file-earmark-check me-1"></i>Justificatifs</div>
+                    <% } %>
                 </div>
 
                 <form id="multiStepForm" method="post" action="insert" enctype="multipart/form-data">
@@ -84,7 +91,21 @@
                     <jsp:include page="section/etat-civil.jsp" />
                     <jsp:include page="section/passeport.jsp" />
                     <jsp:include page="section/visa-transformable.jsp" />
-                    <jsp:include page="section/document.jsp" />
+                    <% if(idTypeDemande == TypeDemandeEnum.TRANSFERT_VISA.getCode()) { %>
+                    <jsp:include page="section/visa.jsp" />
+                    <jsp:include page="section/document.jsp">
+                        <jsp:param name="index" value="5"/>
+                    </jsp:include>
+                    <% } else if (idTypeDemande == TypeDemandeEnum.DUPLICATA.getCode()) { %>
+                    <jsp:include page="section/carte-resident.jsp" />
+                    <jsp:include page="section/document.jsp">
+                        <jsp:param name="index" value="5"/>
+                    </jsp:include>
+                    <% } else { %>
+                    <jsp:include page="section/document.jsp">
+                        <jsp:param name="index" value="4"/>
+                    </jsp:include>
+                    <% } %>
 
                     <select id="categorie_document_data" style="display:none;">
                         <% for(CategorieDemande c : categories) { 
@@ -135,10 +156,18 @@
             </div>
         <% } %>
     </div>
+    <input type="hidden" id="totalSteps" value="
+    <% if(idTypeDemande == TypeDemandeEnum.TRANSFERT_VISA.getCode() 
+        || idTypeDemande == TypeDemandeEnum.DUPLICATA.getCode()) { %>
+        5
+    <% } else { %>
+        4
+    <% } %>
+    ">
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath}/js/form-demande.js"></script>
-    <!--<script src="${pageContext.request.contextPath}/js/component.js"></script>-->
+    <script src="${pageContext.request.contextPath}/js/component.js"></script>
 </body>
 
 </html>
