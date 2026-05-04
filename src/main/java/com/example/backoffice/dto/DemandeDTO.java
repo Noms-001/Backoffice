@@ -7,9 +7,8 @@ public class DemandeDTO {
     Long id;
     String nomDemandeur;
     String prenomDemandeur;
-    String numeroPasseport;
-    String numeroVisaTransformable;
     String categorieDemande;
     String statutDemande;
+    String typeDemande;
     String dateDemande;
 }
