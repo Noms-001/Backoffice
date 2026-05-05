@@ -1,3 +1,46 @@
 TL : ETU003340
 DEV : ETU003301 / ETU003309
 
+Feature-1 : IMPLEMENT QR-CODE
+Creation d'un script sql (ETU003309)
+    - Ajout de la colonne reference de type String dans la table demande
+Creation des dtos avec constructeur (ETU003301)
+    - DemandeurDTO (nom, prenom)
+    - PasseportDTO (reference, dateDelivrance, lieuDelivrance, dateExpiration)
+    - VisaDTO (reference, dateDebut, dateFin)
+    - CarteResidentDTO (reference, dateDebut, dateFin)
+    - VisaTransformableDTO (reference, dateEntree, lieuEntree, dateSortie, lieuSortie)
+    - DocumentDemandeDTO (libelle, chemin)
+    - HistoriqueDemandeDTO (libelle, dateChangement)
+Modification dans Demande (ETU003301)
+    - Ajout de l'attribut reference
+Modification de DemandeDTO (ETU003301)
+    - Remplacer les attributs par : id, reference, typeDemande, categorieDemande, statutActuel, dateDemande, demandeur (DemandeurDTO)
+    passeport (PasseportDTO), visa (VisaDTO), visaTransformable (VisaTransformableDTO), carteResident (CarteResidentDTO), 
+    liste documents (DocumentDemandeDTO), liste historiques (HistoriqueDemandeDTO), qrcode
+    - Ajout constructeur avec argument Demande
+    - Affecter les attributs par les attributs de Demande
+Modification dans DemandeRepository (ETU003309)
+    - Creer la fonction Optional<Demande> findByReference(String reference)
+Modification dans DemandeService (ETU003309)
+    - Remplacer tout ce qui est dans la fonction getAllDemandeDTO() par :
+        Appeler la fonction List<Demande> getAll() puis affecter dans une variable "demandes"
+        Declarer une nouvelle variable List<DemandeDTO> demandeDTOs
+        Boucler demandes puis ajouter dans demandeDTOs new DemandeDTO(demandes.get(i))
+        Retourner la variable demandeDTOs
+    - Creer la fonction List<DemandeDTO> getAllByPasseport(String numeroPasseport)
+        Utiliser la fonction getAllDemandeDTO()
+    - Creer la fonction DemandeDTO getByReference(String reference)
+        Utiliser la fonction Optional<Demande> findByReference(String reference)
+        Si reference non trouvee lancer uen exception
+        Sinon retourner new DemandeDTO(demande)
+Modification dans DemandeRestController (ETU003309)
+    - Creer endpoint api/demandes avec parametre numeroPasseport
+        retourner la fonction getAllByPasseport(numeroPasseport)
+    - Creer endpoint api/demande avec parametre numeroDemande
+        retourner la fonction getByReference(numeroDemande)
+Creation de la classe QRCodeGenerator dans util (ETU003309)
+    - creer la fonction static byte[] generateQRCode(String text, int width, int height)
+Modification des fichiers de configuration (ETU003309)
+    - Ajout server.port et server.address dans application.properties
+    - Ajout de la bibliotheque ZXing dans pom.xml
