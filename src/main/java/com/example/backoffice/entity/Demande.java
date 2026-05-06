@@ -27,6 +27,9 @@ public class Demande {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "reference")
+    private String reference;
+
     @ManyToOne
     @JoinColumn(name = "id_categorie_demande")
     private CategorieDemande categorieDemande;
@@ -38,7 +41,7 @@ public class Demande {
     @ManyToOne
     @JoinColumn(name = "id_demandeur")
     private Demandeur demandeur;
-    
+
     @ManyToOne
     @JoinColumn(name = "id_visa_transformable")
     private VisaTransformable visaTransformable;

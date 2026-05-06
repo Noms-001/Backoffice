@@ -21,6 +21,9 @@ import com.example.backoffice.repository.VisaRepository;
 import com.example.backoffice.util.StatutDemandeEnum;
 import com.example.backoffice.util.TypeDemandeEnum;
 
+import java.util.Optional;
+import java.util.ArrayList;
+
 @Service
 public class DemandeService {
 
@@ -59,7 +62,7 @@ public class DemandeService {
 
     @Autowired
     private VisaService visaService;
-    
+
     @Autowired
     private DocumentService documentService;
 
@@ -71,7 +74,8 @@ public class DemandeService {
     }
 
     public void processDemande(Demandeur demandeur, Passeport passeport, VisaTransformable visaTransformable,
-            Map<String, MultipartFile> documentFiles, Long idCategorieDemande, Long idTypeDemande, String dateDebutStr, String dateFinStr)  throws Exception {
+            Map<String, MultipartFile> documentFiles, Long idCategorieDemande, Long idTypeDemande, String dateDebutStr,
+            String dateFinStr) throws Exception {
         Demande demande = saveNouveauTitre(demandeur, passeport, visaTransformable, documentFiles, idCategorieDemande,
                 null);
         validerDemande(demande, passeport, dateDebutStr, dateFinStr);
@@ -95,7 +99,7 @@ public class DemandeService {
             throw new RuntimeException("Echec de l'enregistrement du statut");
         }
 
-        if(dateDebutStr == null || dateFinStr == null) {
+        if (dateDebutStr == null || dateFinStr == null) {
             throw new RuntimeException("Dates obligatoires");
         }
 
@@ -205,14 +209,14 @@ public class DemandeService {
 
         // 5. Upload des documents
         List<Document> uploadedDocs = documentService.uploadDocuments(savedDemande, documentFiles);
-        
+
         // 6. Vérifier si tous les documents sont uploadés
         if (documentService.areAllDocumentsUploaded(savedDemande, categorieDemande.getDocuments(), uploadedDocs)) {
             // Changer le statut en SCAN_TERMINE
-            historiqueDemandeService.create(savedDemande, StatutDemandeEnum.SCAN_TERMINE.getCode(), 
+            historiqueDemandeService.create(savedDemande, StatutDemandeEnum.SCAN_TERMINE.getCode(),
                     "Tous les documents ont été uploadés");
         }
-        
+
         return savedDemande;
     }
 
@@ -256,42 +260,34 @@ public class DemandeService {
 
     public List<DemandeDTO> getAllDemandeDTO() {
         List<Demande> demandes = getAll();
-
-        return demandes.stream().map(demande -> {
-            DemandeDTO dto = new DemandeDTO();
-
-            dto.setId(demande.getId());
-
-            // Demandeur
-            if (demande.getDemandeur() != null) {
-                dto.setNomDemandeur(demande.getDemandeur().getNom());
-                dto.setPrenomDemandeur(demande.getDemandeur().getPrenom());
-            }
-
-            // Catégorie
-            if (demande.getCategorieDemande() != null) {
-                dto.setCategorieDemande(
-                        demande.getCategorieDemande().getLibelle());
-            }
-
-            // Date
-            if (demande.getDateDemande() != null) {
-                dto.setDateDemande(demande.getDateDemande().toString());
-            }
-
-            // Statut (dernier historique)
-            List<HistoriqueDemande> historiques = historiqueRepository
-                    .findByDemandeIdOrderByDateChangementDesc(demande.getId());
-
-            if (!historiques.isEmpty()) {
-                dto.setStatutDemande(
-                        historiques.get(0).getStatutDemande().getLibelle());
-            }
-
-            // Type
-            dto.setTypeDemande(demande.getTypeDemande().getLibelle());
-
-            return dto;
-        }).collect(Collectors.toList());
+        List<DemandeDTO> demandeDTOs = new ArrayList<>();
+        for (int i = 0; i < demandes.size(); i++) {
+            demandeDTOs.add(new DemandeDTO(demandes.get(i)));
+        }
+        return demandeDTOs;
     }
-}
+
+    public List<DemandeDTO> getAllByPasseport(String numeroPasseport) {
+        return getAllDemandeDTO();
+    }
+
+    public DemandeDTO getByReference(String reference) {
+        Optional<Demande> demande = demandeRepository.findByReference(reference);
+        if (!demande.isPresent()) {
+            throw new RuntimeException("Reference non trouvee");
+        }
+        return new DemandeDTO(demande.get());
+    }
+
+    if(!historiques.isEmpty())
+
+    {
+        dto.setStatutDemande(
+                historiques.get(0).getStatutDemande().getLibelle());
+    }
+
+    // Type
+    dto.setTypeDemande(demande.getTypeDemande().getLibelle());
+
+    return dto;
+}).collect(Collectors.toList());}}
