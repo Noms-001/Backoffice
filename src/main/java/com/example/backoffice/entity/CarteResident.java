@@ -30,7 +30,7 @@ public class CarteResident {
     @Column(name = "date_fin", nullable = false)
     private LocalDate dateFin;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_demande", nullable = false)
     private Demande demande;
 }
