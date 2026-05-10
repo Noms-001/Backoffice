@@ -4,9 +4,11 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +20,8 @@ import com.example.backoffice.repository.DemandeRepository;
 import com.example.backoffice.repository.HistoriqueDemandeRepository;
 import com.example.backoffice.repository.TypeDemandeRepository;
 import com.example.backoffice.repository.VisaRepository;
+import com.example.backoffice.util.QRCodeGenerator;
+import com.example.backoffice.util.ServerInfo;
 import com.example.backoffice.util.StatutDemandeEnum;
 import com.example.backoffice.util.TypeDemandeEnum;
 
@@ -65,6 +69,12 @@ public class DemandeService {
 
     @Autowired
     private DocumentService documentService;
+
+    @Autowired
+    private ServerInfo serverInfo;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     public Demande save(Demande demande) {
         if (demande == null) {
@@ -223,6 +233,7 @@ public class DemandeService {
     public Demande createDemande(Demandeur demandeur, CategorieDemande categorieDemande, Long idTypeDemande,
             VisaTransformable visaTransformable, String commentaire) {
         Demande demande = new Demande();
+        demande.setReference(generateReference());
         demande.setDemandeur(demandeur);
 
         TypeDemande typeDemande = typeDemandeRepository
@@ -260,34 +271,45 @@ public class DemandeService {
 
     public List<DemandeDTO> getAllDemandeDTO() {
         List<Demande> demandes = getAll();
-        List<DemandeDTO> demandeDTOs = new ArrayList<>();
-        for (int i = 0; i < demandes.size(); i++) {
-            demandeDTOs.add(new DemandeDTO(demandes.get(i)));
-        }
-        return demandeDTOs;
+
+        return demandes.stream().map(demande -> {
+            // 🔹 QR Code
+            DemandeDTO demandeDTO = new DemandeDTO(demande);
+            String url = baseUrl + "/demande/" + demande.getReference();
+            byte[] qrcode = QRCodeGenerator.generateQRCode(url, 250, 250);
+            demandeDTO.setQrcode(qrcode);
+            return demandeDTO;
+        }).collect(Collectors.toList());
     }
 
     public List<DemandeDTO> getAllByPasseport(String numeroPasseport) {
-        return getAllDemandeDTO();
+        return getAllDemandeDTO()
+                .stream()
+                .filter(d -> d.getPasseport() != null
+                        && numeroPasseport.equals(d.getPasseport().getReference()))
+                .collect(Collectors.toList());
     }
 
     public DemandeDTO getByReference(String reference) {
-        Optional<Demande> demande = demandeRepository.findByReference(reference);
-        if (!demande.isPresent()) {
-            throw new RuntimeException("Reference non trouvee");
-        }
-        return new DemandeDTO(demande.get());
+        Demande demande = demandeRepository.findByReference(reference)
+                .orElseThrow(() -> new RuntimeException("Demande non trouvée avec la référence : " + reference));
+        DemandeDTO demandeDTO = new DemandeDTO(demande);
+        String url = "http://" + serverInfo.getAddress() + ":" + serverInfo.getPort() + "/demande?numeroDemnde="
+                + demande.getReference();
+        byte[] qrcode = QRCodeGenerator.generateQRCode(url, 250, 250);
+        demandeDTO.setQrcode(qrcode);
+        return demandeDTO;
     }
 
-    if(!historiques.isEmpty())
+    public String generateReference() {
+        Random random = new Random();
+        String reference;
 
-    {
-        dto.setStatutDemande(
-                historiques.get(0).getStatutDemande().getLibelle());
+        do {
+            int number = 10000 + random.nextInt(90000);
+            reference = "DMD-MG-" + number;
+        } while (demandeRepository.findByReference(reference).isPresent());
+
+        return reference;
     }
-
-    // Type
-    dto.setTypeDemande(demande.getTypeDemande().getLibelle());
-
-    return dto;
-}).collect(Collectors.toList());}}
+}

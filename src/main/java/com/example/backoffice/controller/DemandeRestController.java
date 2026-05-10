@@ -16,6 +16,7 @@ public class DemandeRestController {
     @Autowired
     private DemandeService demandeService;
 
+    // 🔹 Tous les demandes
     @GetMapping("/api/demandes")
     public List<DemandeDTO> getAllDemandes(@RequestParam(required = false) String numeroPasseport) {
         if (numeroPasseport != null) {
