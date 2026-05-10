@@ -126,12 +126,12 @@
                             <table class="table table-visa align-middle">
                                 <thead>
                                     <tr>
-                                        <th>Nom & Prénom</th>
+                                        <th>Référence</th>
                                         <th>Type</th>
                                         <th>Catégorie</th>
                                         <th>Date demande</th>
                                         <th>Statut</th>
-                                        <th style="width: 110px;">Action</th>
+                                        <th style="width: 110px;">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="visaTableBodyDesktop">
@@ -156,10 +156,28 @@
         </div>
     </div>
 
+    <div class="modal fade" id="qrModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">QR Code</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <img id="qrImage" style="width:250px;height:250px;" />
+            </div>
+
+            </div>
+        </div>
+    </div>
+
     <script>
         const contextPath = "${pageContext.request.contextPath}";
     </script>
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath}/js/list-demande.js"></script>
     <script src="${pageContext.request.contextPath}/js/component.js"></script>
 </body>

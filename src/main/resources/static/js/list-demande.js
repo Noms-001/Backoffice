@@ -12,12 +12,12 @@ document.addEventListener("DOMContentLoaded", () => {
             // Mapping backend → frontend
             demandesList = data.map(d => ({
                 id: d.id,
-                nom: d.nomDemandeur,
-                prenom: d.prenomDemandeur,
+                reference: d.reference,
                 typeDemande: d.typeDemande,
                 categorie: normalizeCategorie(d.categorieDemande),
                 dateDemande: d.dateDemande,
-                statut: normalizeStatut(d.statutDemande)
+                statut: normalizeStatut(d.statutActuel),
+                qrcode: d.qrcode
             }));
 
             renderAll();
@@ -148,6 +148,20 @@ document.addEventListener("DOMContentLoaded", () => {
         window.location.href = contextPath + `/demande/form?id=${id}`;
     }
 
+    function handleQrCodeClick(id) {
+        const demande = demandesList.find(d => d.id === id);
+
+        if (!demande || !demande.qrcode) {
+            alert("QR Code introuvable.");
+            return;
+        }
+
+        document.getElementById("qrImage").src = "data:image/png;base64," + demande.qrcode;
+
+        const modal = new bootstrap.Modal(document.getElementById("qrModal"));
+        modal.show();
+    }
+
     // ---------- RENDER TABLE ----------
     function renderDesktopTable(filtered) {
         const tbody = document.getElementById("visaTableBodyDesktop");
@@ -163,15 +177,23 @@ document.addEventListener("DOMContentLoaded", () => {
         filtered.forEach(d => {
             html += `
                 <tr>
-                    <td><strong>${escapeHtml(d.nom + " " + d.prenom)}</strong></td>
+                    <td><strong>${d.reference}</strong></td>
                     <td>${d.typeDemande}</td>
                     <td>${getCategorieLabel(d.categorie)}</td>
                     <td>${formatDate(d.dateDemande)}</td>
                     <td>${getStatutBadge(d.statut)}</td>
                     <td>
-                        <button class="btn btn-modifier edit-btn" data-id="${d.id}" data-view="demande-edit">
-                            Modifier
+
+                        <!-- EDIT -->
+                        <button class="btn btn-light btn-sm edit-btn" data-id="${d.id}" title="Modifier">
+                            <i class="bi bi-pencil-square"></i>
                         </button>
+
+                        <!-- QR CODE -->
+                        <button class="btn btn-light btn-sm qr-btn" data-id="${d.id}" title="QR Code">
+                            <i class="bi bi-qr-code"></i>
+                        </button>
+
                     </td>
                 </tr>
             `;
@@ -182,6 +204,12 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener("click", () => {
                 handleEditClick(parseInt(btn.dataset.id));
+            });
+        });
+
+        document.querySelectorAll('.qr-btn').forEach(btn => {
+            btn.addEventListener("click", () => {
+                handleQrCodeClick(parseInt(btn.dataset.id));
             });
         });
     }
