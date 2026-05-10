@@ -1,30 +1,17 @@
 package com.example.backoffice.dto;
 
+import com.example.backoffice.entity.Demandeur;
+
+import lombok.Data;
+
+@Data
 public class DemandeurDTO {
+
     private String nom;
     private String prenom;
 
-    public DemandeurDTO() {
-    }
-
-    public DemandeurDTO(String nom, String prenom) {
-        this.nom = nom;
-        this.prenom = prenom;
-    }
-
-    public String getNom() {
-        return nom;
-    }
-
-    public void setNom(String nom) {
-        this.nom = nom;
-    }
-
-    public String getPrenom() {
-        return prenom;
-    }
-
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
+    public DemandeurDTO(Demandeur demandeur) {
+        this.nom = demandeur.getNom();
+        this.prenom = demandeur.getPrenom();
     }
 }

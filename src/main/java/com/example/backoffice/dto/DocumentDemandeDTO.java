@@ -1,6 +1,17 @@
 package com.example.backoffice.dto;
-import java.util.Date;
+
+import com.example.backoffice.entity.DocumentDemande;
+
+import lombok.Data;
+
+@Data
 public class DocumentDemandeDTO {
-    private String libelle; private String chemin;
-    public DocumentDemandeDTO() {}
+
+    private String libelle;
+    private String chemin;
+
+    public DocumentDemandeDTO(DocumentDemande document) {
+        this.libelle = document.getDocument().getLibelle();
+        this.chemin = document.getPath();
+    }
 }
