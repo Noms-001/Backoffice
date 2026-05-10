@@ -4,9 +4,11 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +20,8 @@ import com.example.backoffice.repository.DemandeRepository;
 import com.example.backoffice.repository.HistoriqueDemandeRepository;
 import com.example.backoffice.repository.TypeDemandeRepository;
 import com.example.backoffice.repository.VisaRepository;
+import com.example.backoffice.util.QRCodeGenerator;
+import com.example.backoffice.util.ServerInfo;
 import com.example.backoffice.util.StatutDemandeEnum;
 import com.example.backoffice.util.TypeDemandeEnum;
 
@@ -59,9 +63,15 @@ public class DemandeService {
 
     @Autowired
     private VisaService visaService;
-    
+
     @Autowired
     private DocumentService documentService;
+
+    @Autowired
+    private ServerInfo serverInfo;
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     public Demande save(Demande demande) {
         if (demande == null) {
@@ -71,7 +81,8 @@ public class DemandeService {
     }
 
     public void processDemande(Demandeur demandeur, Passeport passeport, VisaTransformable visaTransformable,
-            Map<String, MultipartFile> documentFiles, Long idCategorieDemande, Long idTypeDemande, String dateDebutStr, String dateFinStr)  throws Exception {
+            Map<String, MultipartFile> documentFiles, Long idCategorieDemande, Long idTypeDemande, String dateDebutStr,
+            String dateFinStr) throws Exception {
         Demande demande = saveNouveauTitre(demandeur, passeport, visaTransformable, documentFiles, idCategorieDemande,
                 null);
         validerDemande(demande, passeport, dateDebutStr, dateFinStr);
@@ -95,7 +106,7 @@ public class DemandeService {
             throw new RuntimeException("Echec de l'enregistrement du statut");
         }
 
-        if(dateDebutStr == null || dateFinStr == null) {
+        if (dateDebutStr == null || dateFinStr == null) {
             throw new RuntimeException("Dates obligatoires");
         }
 
@@ -205,20 +216,21 @@ public class DemandeService {
 
         // 5. Upload des documents
         List<Document> uploadedDocs = documentService.uploadDocuments(savedDemande, documentFiles);
-        
+
         // 6. Vérifier si tous les documents sont uploadés
         if (documentService.areAllDocumentsUploaded(savedDemande, categorieDemande.getDocuments(), uploadedDocs)) {
             // Changer le statut en SCAN_TERMINE
-            historiqueDemandeService.create(savedDemande, StatutDemandeEnum.SCAN_TERMINE.getCode(), 
+            historiqueDemandeService.create(savedDemande, StatutDemandeEnum.SCAN_TERMINE.getCode(),
                     "Tous les documents ont été uploadés");
         }
-        
+
         return savedDemande;
     }
 
     public Demande createDemande(Demandeur demandeur, CategorieDemande categorieDemande, Long idTypeDemande,
             VisaTransformable visaTransformable, String commentaire) {
         Demande demande = new Demande();
+        demande.setReference(generateReference());
         demande.setDemandeur(demandeur);
 
         TypeDemande typeDemande = typeDemandeRepository
@@ -258,40 +270,43 @@ public class DemandeService {
         List<Demande> demandes = getAll();
 
         return demandes.stream().map(demande -> {
-            DemandeDTO dto = new DemandeDTO();
-
-            dto.setId(demande.getId());
-
-            // Demandeur
-            if (demande.getDemandeur() != null) {
-                dto.setNomDemandeur(demande.getDemandeur().getNom());
-                dto.setPrenomDemandeur(demande.getDemandeur().getPrenom());
-            }
-
-            // Catégorie
-            if (demande.getCategorieDemande() != null) {
-                dto.setCategorieDemande(
-                        demande.getCategorieDemande().getLibelle());
-            }
-
-            // Date
-            if (demande.getDateDemande() != null) {
-                dto.setDateDemande(demande.getDateDemande().toString());
-            }
-
-            // Statut (dernier historique)
-            List<HistoriqueDemande> historiques = historiqueRepository
-                    .findByDemandeIdOrderByDateChangementDesc(demande.getId());
-
-            if (!historiques.isEmpty()) {
-                dto.setStatutDemande(
-                        historiques.get(0).getStatutDemande().getLibelle());
-            }
-
-            // Type
-            dto.setTypeDemande(demande.getTypeDemande().getLibelle());
-
-            return dto;
+            // 🔹 QR Code
+            DemandeDTO demandeDTO = new DemandeDTO(demande);
+            String url = baseUrl + "/demande/" + demande.getReference();
+            byte[] qrcode = QRCodeGenerator.generateQRCode(url, 250, 250);
+            demandeDTO.setQrcode(qrcode);
+            return demandeDTO;
         }).collect(Collectors.toList());
+    }
+
+    public List<DemandeDTO> getAllByPasseport(String numeroPasseport) {
+        return getAllDemandeDTO()
+                .stream()
+                .filter(d -> d.getPasseport() != null
+                        && numeroPasseport.equals(d.getPasseport().getReference()))
+                .collect(Collectors.toList());
+    }
+
+    public DemandeDTO getByReference(String reference) {
+        Demande demande = demandeRepository.findByReference(reference)
+                .orElseThrow(() -> new RuntimeException("Demande non trouvée avec la référence : " + reference));
+        DemandeDTO demandeDTO = new DemandeDTO(demande);
+        String url = "http://" + serverInfo.getAddress() + ":" + serverInfo.getPort() + "/demande?numeroDemnde="
+                + demande.getReference();
+        byte[] qrcode = QRCodeGenerator.generateQRCode(url, 250, 250);
+        demandeDTO.setQrcode(qrcode);
+        return demandeDTO;
+    }
+
+    public String generateReference() {
+        Random random = new Random();
+        String reference;
+
+        do {
+            int number = 10000 + random.nextInt(90000);
+            reference = "DMD-MG-" + number;
+        } while (demandeRepository.findByReference(reference).isPresent());
+
+        return reference;
     }
 }

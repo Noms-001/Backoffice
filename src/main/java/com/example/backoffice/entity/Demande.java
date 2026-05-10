@@ -12,8 +12,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +29,8 @@ public class Demande {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String reference;
+
     @ManyToOne
     @JoinColumn(name = "id_categorie_demande")
     private CategorieDemande categorieDemande;
@@ -38,7 +42,7 @@ public class Demande {
     @ManyToOne
     @JoinColumn(name = "id_demandeur")
     private Demandeur demandeur;
-    
+
     @ManyToOne
     @JoinColumn(name = "id_visa_transformable")
     private VisaTransformable visaTransformable;
@@ -49,4 +53,13 @@ public class Demande {
 
     @OneToMany(mappedBy = "demande", fetch = FetchType.LAZY)
     private List<DocumentDemande> documentDemandes;
+
+    @ManyToMany(mappedBy = "demande", fetch = FetchType.LAZY)
+    private List<HistoriqueDemande> historiqueDemandes;
+
+    @OneToOne(mappedBy = "demande", fetch = FetchType.LAZY)
+    private Visa visa;
+
+    @OneToOne(mappedBy = "demande", fetch = FetchType.LAZY)
+    private CarteResident carteResident;
 }
