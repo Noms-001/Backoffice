@@ -25,9 +25,6 @@ import com.example.backoffice.util.ServerInfo;
 import com.example.backoffice.util.StatutDemandeEnum;
 import com.example.backoffice.util.TypeDemandeEnum;
 
-import java.util.Optional;
-import java.util.ArrayList;
-
 @Service
 public class DemandeService {
 

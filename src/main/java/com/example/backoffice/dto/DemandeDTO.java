@@ -4,12 +4,9 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.Data;
 
-import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.backoffice.entity.Demande;
 import com.example.backoffice.entity.HistoriqueDemande;
 
 @Data
